@@ -1,3 +1,6 @@
+# Script de exercícios da aula 1
+# Dan Nogueira
+
 # 1. Primeiros passos com R
 
 meu_ano_nascimento <- 1998
@@ -19,7 +22,7 @@ media_notas <- mean(notas)
 
 # 5. Usando lógica condicional
 
-aprovado <- notas > 8  
+aprovado <- notas[notas > 8]  
 #aqui estou pedindo para atribuir ao objeto "aprovado" 
 #uma comparação de todos os valores de "notas" que são 
 #maiores que 8
@@ -39,7 +42,7 @@ media_idades <- mean(minhas_idades)
 x <- media_idades - minha_idade
 
 # 8. Operações com vetores II
-notas_abaixo_media <- notas < media_notas
+notas_abaixo_media <- notas[notas < media_notas]
 
 # 9. Explorando data.frames
 dados_pessoais <- data.frame(anos, minhas_idades) #criando tabela
@@ -69,6 +72,13 @@ names(grandes_capitais_sudeste) <- c("Capital", "Estado", "População")
 
 #11. Manipulando data.frames II
 
-names(capitais_sudeste) <- c("Capital", "Estado", "População por mil")
-estados <- list("Minas Gerais", "São Paulo", "Rio de Janeiro", "Espírito Santo")
-print(capitais_sudeste)
+#names(capitais_sudeste) <- c("Capital", "Estado", "População por mil")
+#estados <- list("Minas Gerais", "São Paulo", "Rio de Janeiro", "Espírito Santo")
+#print(capitais_sudeste)
+
+
+# 12. 
+library(ggplot2)
+ggplot(data = dados_pessoais, aes(x = anos, y = minhas_idades)) + 
+  geom_line() + 
+  geom_point()
