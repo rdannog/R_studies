@@ -20,6 +20,11 @@ banco[,2]
 
 # Importando uma biblioteca
 
+install.packages("readODS")
+install.packages("readxl")
+install.packages("haven")
+install.packages("rio")
+
 library(tidyverse)
 
 # 1. Carregando arquivos simples I
@@ -35,6 +40,4 @@ head(satisfação)
 # View(inventario)
 
 # 4. Carregando arquivos simples IV
-casos <- read_csv("casos_registrados.csv")
-head(casos)
-filtro <- data.frame(casos[casos > 1])
+

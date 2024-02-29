@@ -1,0 +1,6 @@
+cliente;satisfacao;tempo_gasto
+Cliente 1;4;2.3
+Cliente 2;5;3.2
+Cliente 3;3;1.9
+Cliente 4;4;4.6
+Cliente 5;2;5.0
