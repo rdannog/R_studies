@@ -146,3 +146,9 @@ View(wvs_spss)
 View(wvs_stata)
 
 
+
+# 6. Carregando arquivos de outros formatos II
+
+airbnb <- import("2019_Alto_Paraiso_do_Goias_STATE_OF_GOIAS_ Airbnb_listings.xlsx")
+View(airbnb)
+
