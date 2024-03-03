@@ -115,6 +115,7 @@ satisfação <- read_delim("pesquisa_satisfacao.txt", delim = ";")
 head(satisfação)
 
 
+
 # 3. Carregando arquivos simples III
 # inventario <- read_table("inventario.tab")
 # View(inventario)
@@ -122,5 +123,26 @@ head(satisfação)
 casos <- read_delim("casos_registrados.csv", delim = ",", skip = 2)
 view(casos)
 
-# 4. Carregando arquivos simples IV
+
+
+# 4. Carregando arquivos delimitados
+
+library(readr)
+
+censo <- read_delim("https://raw.githubusercontent.com/izabelflores/Censo_1872/main/Censo_1872_dados_tidy_versao2.csv", delim = ";", locale = locale(encoding = "ISO-8859-1"))
+
+head(censo)
+
+
+
+# 5. Carregando arquivos de outros formatos I
+
+library(rio)
+library(haven)
+
+wvs_spss <- import("wvs.sav")
+wvs_stata <- import("wvs.dta")
+View(wvs_spss)
+View(wvs_stata)
+
 
