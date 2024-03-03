@@ -100,13 +100,17 @@ convert("exemplo.csv", "exemplo.sav")
 library(tidyverse) 
 
 # 1. Carregando arquivos simples I
+
 # pessoas <- read_delim("pessoas.csv", delim = ",", skip = 3) 
 
 pessoas <- read_delim("pessoas.csv", delim = ",")
-View(pessoas)
+head(pessoas)
+
 
 # 2. Carregando arquivos simples II
+
 #satisfação <- read_csv("pesquisa_satisfacao.txt")
+
 satisfação <- read_delim("pesquisa_satisfacao.txt", delim = ";")
 head(satisfação)
 
@@ -114,6 +118,9 @@ head(satisfação)
 # 3. Carregando arquivos simples III
 # inventario <- read_table("inventario.tab")
 # View(inventario)
+
+casos <- read_delim("casos_registrados.csv", delim = ",", skip = 2)
+view(casos)
 
 # 4. Carregando arquivos simples IV
 
