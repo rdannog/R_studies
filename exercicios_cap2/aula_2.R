@@ -152,3 +152,15 @@ View(wvs_stata)
 airbnb <- import("2019_Alto_Paraiso_do_Goias_STATE_OF_GOIAS_ Airbnb_listings.xlsx")
 View(airbnb)
 
+
+
+# 7. Carregando microdados administrativos
+
+alunos <- import("MICRODADOS_ED_SUP_IES_2022.CSV")
+
+names(alunos)
+ncol(alunos)
+nrow(alunos)
+
+
+
