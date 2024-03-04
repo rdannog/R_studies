@@ -154,3 +154,5 @@ mutate(capitais, populacao = populacao / 1000)
 
 # Cria uma variavel indicando o ano
 mutate(capitais, ano = 2012)
+
+#teste
