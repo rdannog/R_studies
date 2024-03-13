@@ -1,7 +1,7 @@
-#Lista de exercÃ­cios da aula 3
+#Lista de exercícios da aula 3
 #Dan Nogueira
 
-# ManipulaÃ§Ã£o de dados
+# Manipulação de dados
 
 # 3.1.1 - Espalhar e reunir
 
@@ -73,11 +73,11 @@ filter(capitais,
 # remover observaÃ§Ãµes com missings
 filter(capitais, !is.na(despesa_saude))
 
-# para manter apenas capitais que pertencem Ã s regiÃµes Sul ou Sudeste, podemos usar:
+# para manter apenas capitais que pertencem às regiões Sul ou Sudeste, podemos usar:
 
 filter(capitais, regiao %in% c("Sul", "Sudeste"))
 
-# OperaÃ§Ãµes de filtragem
+# Operações de filtragem
 filter(capitais, !uf %in% c("RS", "SP", "MG"))
 filter(capitais, regiao == "Sul" | regiao == "Sudeste")
 filter(capitais, regiao == "Nordeste" & populacao < 1000000)
@@ -155,4 +155,3 @@ mutate(capitais, populacao = populacao / 1000)
 # Cria uma variavel indicando o ano
 mutate(capitais, ano = 2012)
 
-#teste
