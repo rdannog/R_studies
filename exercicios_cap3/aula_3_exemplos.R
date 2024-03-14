@@ -1,5 +1,4 @@
-#Lista de exercícios da aula 3
-#Dan Nogueira
+
 
 # Manipulação de dados
 
