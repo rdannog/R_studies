@@ -6,7 +6,6 @@
 #install.packages("rio")
 
 
-
 #################################
 #                               #
 # 1. Filtrando bases de dados I #
@@ -22,7 +21,7 @@ library(tidyverse)
 base_pop_quilombola <- import("pop_quilombola.csv")
 View(base_pop_quilombola)
 
-# Filtrando os 100 primeiros
+# Filtrando as 100 primeiras observações
 recorte <- slice(base_pop_quilombola, 1:100)
 View(recorte)
 
@@ -38,3 +37,14 @@ View(recorte)
 
 pop_total <- filter(base_pop_quilombola, pop_quilombola > 0)
 View(pop_total)
+
+
+####################################################
+#                                                  #
+# 3. Seleção de variáveis,filtragem e ordenamento  #
+#                                                  #
+####################################################
+
+# Carregando a população total dos municípios segundo os resultados do universo do Censo de 2022
+
+populacao <- import()
