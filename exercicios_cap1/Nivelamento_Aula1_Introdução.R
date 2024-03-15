@@ -1,4 +1,4 @@
-# Script de exercÃ­cios da aula 1
+# Script de exercícios da aula 1
 # Dan Nogueira
 
 # 1. Primeiros passos com R
