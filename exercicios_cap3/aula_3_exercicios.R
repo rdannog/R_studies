@@ -47,4 +47,9 @@ View(pop_total)
 
 # Carregando a população total dos municípios segundo os resultados do universo do Censo de 2022
 
-populacao <- import()
+populacao <- import("pop_total.xlsx")
+View(populacao)
+
+# Crie um novo objeto contendo apenas os 50 municípios mais populados do país, ordenados de forma decrescente
+
+maiores_populacoes <- 

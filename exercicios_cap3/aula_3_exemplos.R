@@ -154,3 +154,15 @@ mutate(capitais, populacao = populacao / 1000)
 # Cria uma variavel indicando o ano
 mutate(capitais, ano = 2012)
 
+
+mutate(capitais, 
+       ano = 2012, 
+       populacao = populacao / 1000, 
+       .keep = "none"
+)
+
+# posicionar as novas variáveis antes do nome de alguma variável
+mutate(capitais, ano = 2012, .before = regiao)
+
+# Cria uma variavel que indica municipios com mais de 500 mil habitantes
+mutate(capitais, capitais_grandes = if_else(populacao > 500000, "Capital de grande porte", "Capital de menor porte"))
