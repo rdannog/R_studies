@@ -13,13 +13,28 @@
 #                               #
 #################################
 
+# Importando a base de dados
+
 library(rio)
 
 library(tidyverse)
 
-pop_quilombola <- import("pop_quilombola.csv")
-View(pop_quilombola)
+base_pop_quilombola <- import("pop_quilombola.csv")
+View(base_pop_quilombola)
 
 # Filtrando os 100 primeiros
-recorte_pop_quilombola <- slice(pop_quilombola, 1:100)
-View(recorte_pop_quilombola)
+recorte <- slice(base_pop_quilombola, 1:100)
+View(recorte)
+
+
+
+###################################
+#                                 #
+# 2. Filtrando bases de dados II  #
+#                                 #
+###################################
+
+# quantos municípios têm populações quilombolas no país?
+
+pop_total <- filter(base_pop_quilombola, pop_quilombola > 0)
+View(pop_total)
