@@ -13,7 +13,7 @@
 #################################
 
 # Importando a base de dados
-install.packages("rio")
+#install.packages("rio")
 library(rio)
 
 library(tidyverse)
@@ -35,7 +35,7 @@ View(recorte)
 
 # quantos munic?pios t?m popula??es quilombolas no pa?s?
 
-pop_total <- filter(base_pop_quilombola, pop_quilombola > 0)
+pop_municipios <- filter(base_pop_quilombola, pop_quilombola > 0)
 View(pop_total)
 
 
@@ -80,7 +80,18 @@ populacao <- mutate(populacao, pop_mil = pop_total/1000)
 populacao <- mutate(populacao, classificacao = if_else(pop_total < 500000, "Pequeno porte", "Outros"))
 
 # Selecionando variaveis
-populacao <- select(populacao, municipio, pop_mil, classificacao)
+#populacao <- select(populacao, municipio, pop_mil, classificacao)
 
 view(populacao)
 
+
+############################
+#                          #
+# 5. Resumo de variáveis   #
+#                          #
+############################
+
+# Calcule o tamanho da população quilombola e a população total do Brasil.
+
+pop_quilombola_total <- sum(base_pop_quilombola$pop_quilombola)
+pop_brasil_total <- sum(populacao$pop_total)
