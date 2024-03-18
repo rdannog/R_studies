@@ -1,4 +1,4 @@
-#Lista de exercícios do capítulo 3
+#Lista de exerc?cios do cap?tulo 3
 #Dan Nogueira
 
 
@@ -13,7 +13,7 @@
 #################################
 
 # Importando a base de dados
-
+install.packages("rio")
 library(rio)
 
 library(tidyverse)
@@ -21,7 +21,7 @@ library(tidyverse)
 base_pop_quilombola <- import("pop_quilombola.csv")
 View(base_pop_quilombola)
 
-# Filtrando as 100 primeiras observações
+# Filtrando as 100 primeiras observa??es
 recorte <- slice(base_pop_quilombola, 1:100)
 View(recorte)
 
@@ -33,7 +33,7 @@ View(recorte)
 #                                 #
 ###################################
 
-# quantos municípios têm populações quilombolas no país?
+# quantos munic?pios t?m popula??es quilombolas no pa?s?
 
 pop_total <- filter(base_pop_quilombola, pop_quilombola > 0)
 View(pop_total)
@@ -41,15 +41,46 @@ View(pop_total)
 
 ####################################################
 #                                                  #
-# 3. Seleção de variáveis,filtragem e ordenamento  #
+# 3. Sele??o de vari?veis,filtragem e ordenamento  #
 #                                                  #
 ####################################################
 
-# Carregando a população total dos municípios segundo os resultados do universo do Censo de 2022
+# Carregando a popula??o total dos munic?pios segundo os resultados do universo do Censo de 2022
 
 populacao <- import("pop_total.xlsx")
 View(populacao)
 
-# Crie um novo objeto contendo apenas os 50 municípios mais populados do país, ordenados de forma decrescente
+# Crie um novo objeto contendo apenas os 50 munic?pios mais populados do pa?s, ordenados de forma decrescente
 
-maiores_populacoes <- 
+# Selecionando variaveis a serem usadas
+maiores_populacoes <- select(populacao, municipio, pop_total)
+View(maiores_populacoes)
+
+# Ordenando por ordem decrescente
+populacao_ordenada <- arrange(maiores_populacoes, -pop_total)
+
+# Selecionando os 50 municipios mais populados
+populacao_ordenada <- slice(populacao_ordenada, 1:50)
+
+view(populacao_ordenada)
+
+
+############################
+#                          #
+# 4. CriaÃ§Ã£o de variÃ¡veis  #
+#                          #
+############################
+
+# Adicione ao objeto populacao duas novas variÃ¡veis: 
+# uma que contenha a populaÃ§Ã£o dos municÃ­pios em mil habitantes 
+
+populacao <- mutate(populacao, pop_mil = pop_total/1000)
+
+# outra que tenha como valores Pequeno porte, para municÃ­pios com menos de 50 mil habitantes, e Outros para os demais municÃ­pios
+populacao <- mutate(populacao, classificacao = if_else(pop_total < 500000, "Pequeno porte", "Outros"))
+
+# Selecionando variaveis
+populacao <- select(populacao, municipio, pop_mil, classificacao)
+
+view(populacao)
+
