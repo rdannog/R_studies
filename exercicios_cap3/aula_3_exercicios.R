@@ -105,4 +105,4 @@ pop_brasil_total <- sum(populacao$pop_total)
 
 # Use a variável cod_ibge para cruzar as duas bases de forma que a base resultante contenha informações sobre a população total e a população quilombola de cada município. Salve o resultado dessa operação no objeto municipios.
 
-municipios <- 
+municipios_ibge <- mutate(base_pop_quilombola, codigos = cod_ibge)
