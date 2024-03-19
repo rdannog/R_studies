@@ -177,8 +177,40 @@ View(municipios_proporcao)
 
 
 
-###########################################
-#                                         #
-# 10. Agrupamento e resumo de variáveis I #
-#                                         #
-###########################################
+############################################
+#                                          #
+# 10. Agrupamento e resumo de variáveis II #
+#                                          #
+############################################
+
+# Descubra quais são os 5 estados com as maiores proporções de pessoas quilombolas em relação à população total.
+
+# Agrupando por estado
+
+estados <- group_by(municipios, sigla_uf)
+
+# Calculando a população por estado
+
+estados_resumo <- summarise(estados, pop_estado = sum(pop_total), pop_quilombola_estado = sum(pop_quilombola))
+
+# Calculando a proporção de pessoas quilombolas em relação à população total de cada estado
+
+estados_proporcao <- mutate(estados_resumo, proporcao = (pop_quilombola_estado/pop_estado)*1000)
+
+# Reporte os 5 estados com as maiores proporções de pessoas quilombolas nos comentários.
+
+estados_ordenados <- arrange(estados_proporcao, -proporcao)
+estados_ordenados <- slice(estados_ordenados, 1:5)
+
+# MA (39%)
+# BA (28%)
+# AP (17%)
+# PA (16%)
+# SE (12%)
+
+
+############################################
+#                                          #
+# 10. Agrupamento e resumo de variáveis II #
+#                                          #
+############################################
