@@ -19,7 +19,6 @@ library(rio)
 library(tidyverse)
 
 base_pop_quilombola <- import("pop_quilombola.csv")
-View(base_pop_quilombola)
 
 # Filtrando as 100 primeiras observa??es
 recorte <- slice(base_pop_quilombola, 1:100)
@@ -36,7 +35,6 @@ View(recorte)
 # quantos munic?pios t?m popula??es quilombolas no pa?s?
 
 pop_municipios <- filter(base_pop_quilombola, pop_quilombola > 0)
-View(pop_total)
 
 
 ####################################################
@@ -141,4 +139,15 @@ pop_ordenada <- slice(pop_ordenada, 1:3)
 #                                    #
 ######################################
 
+# Na pasta de materiais, há um arquivo chamado uf_municipios.csv com três variáveis: regiao, sigla_uf e cod_ibge. Carregue e salve essa base no objeto uf_municipios
 
+uf_municipios <- import("uf_municipios.csv")
+
+# Adicione as 2 variáveis com informações de região e estado à base municipios.
+
+municipios_completo <- right_join(uf_municipios, municipios_pop_quilombola, by = join_by(cod_ibge == cod_ibge))
+
+
+# ao final, a base municipios deverá ter 6 variáveis: regiao, sigla_uf, municipio, cod_ibge, pop_total e pop_quilombola
+
+municipios_completo <- select(municipios_completo, regiao, sigla_uf, municipio, cod_ibge, pop_total, pop_quilombola, -proporcao_quilombola)
