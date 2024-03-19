@@ -120,13 +120,14 @@ municipios <- full_join(populacao, base_pop_quilombola, by = join_by(cod_ibge ==
 
 # crie uma variável que indique a proporção de pessoas quilombolas em relação ao total da população de cada município
 
-municipios_pop_quilombola <- mutate(municipios, proporcao_quilombola = (pop_quilombola/pop_total)*100)
+municipios_pop_quilombola <- mutate(municipios, proporcao_quilombola = (pop_quilombola/pop_total)*1000)
 
 # Reporte os 3 municípios com as maiores proporções de pessoas quilombolas nos comentários.
 
 pop_ordenada <- arrange(municipios_pop_quilombola, -proporcao_quilombola)
 pop_ordenada <- slice(pop_ordenada, 1:3)
 
+View(pop_ordenada)
 # Alcântara (MA) - 84%
 # Berilo (MG) - 58%
 # Cavalcante (GO) - 57%
@@ -166,5 +167,18 @@ municipios_completo <- select(municipios_completo, regiao, sigla_uf, municipio, 
 municipios_novo <- group_by(municipios_completo, regiao)
 
 # Calculando a população por região
-municipios_resumo <- summarise(municipios, pop_regiao = sum(pop_total), pop_quilombola_região = sum(pop_quilombola))
+municipios_resumo <- summarise(municipios, pop_regiao = sum(pop_total), pop_quilombola_regiao = sum(pop_quilombola))
 
+# Calcule a proporção de pessoas quilombolas em relação à população total de cada região
+
+municipios_proporcao <- mutate(municipios_resumo, proporcao = (pop_quilombola_regiao/pop_regiao)*1000)
+
+View(municipios_proporcao)
+
+
+
+###########################################
+#                                         #
+# 10. Agrupamento e resumo de variáveis I #
+#                                         #
+###########################################
