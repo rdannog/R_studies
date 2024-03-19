@@ -41,7 +41,7 @@ View(pop_total)
 
 ####################################################
 #                                                  #
-# 3. Sele??o de vari?veis,filtragem e ordenamento  #
+# 3. Seleção de variáveis,filtragem e ordenamento  #
 #                                                  #
 ####################################################
 
@@ -113,4 +113,32 @@ summarise(base_pop_quilombola, pop_quilombola_total = sum(pop_quilombola))
 
 municipios <- full_join(populacao, base_pop_quilombola, by = join_by(cod_ibge == cod_ibge))
 
-View(municipios)
+
+####################################################
+#                                                  #
+# 7. Criação de variáveis, filtragem e ordenamento #
+#                                                  #
+####################################################
+
+# crie uma variável que indique a proporção de pessoas quilombolas em relação ao total da população de cada município
+
+municipios_pop_quilombola <- mutate(municipios, proporcao_quilombola = (pop_quilombola/pop_total)*100)
+
+# Reporte os 3 municípios com as maiores proporções de pessoas quilombolas nos comentários.
+
+pop_ordenada <- arrange(municipios_pop_quilombola, -proporcao_quilombola)
+pop_ordenada <- slice(pop_ordenada, 1:3)
+
+# Alcântara (MA) - 84%
+# Berilo (MG) - 58%
+# Cavalcante (GO) - 57%
+
+
+
+######################################
+#                                    #
+# 8. Cruzamento de bases de dados II #
+#                                    #
+######################################
+
+

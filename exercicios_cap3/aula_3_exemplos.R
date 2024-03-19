@@ -299,3 +299,37 @@ inner_join(regioes, territorio, by = join_by(regiao == regiao))
 
 # junta todas as observações, independente da correspondência
 full_join(regioes, territorio, by = join_by(regiao == regiao))
+
+
+#3.3.3 Controlando o comportamento das funções _join
+
+#  imagine que temos agora uma base chamada regioes2 que contém as mesmas informações de regioes, mas com o nome da coluna-chave diferente
+
+regioes2 <- regioes |>
+  rename(regiao2 = regiao)
+
+# Se tentarmos cruzar regioes2 com territorio usando o código que já vimos anteriormente, teremos um erro:
+
+left_join(regioes2, territorio, by = join_by(regiao == regiao))
+
+# Nestes casos, precisamos usar o argumento by de forma diferente. Em vez de passar uma expressão regiao == regiao, vamos precisar indicar que a coluna regiao2 da base regioes2 é igual à coluna regiao da base territorio:
+
+left_join(regioes2, territorio, by = join_by(regiao2 == regiao))
+
+# Outro alerta comum ao usar funções _join é o de multiple matches, que ocorrem quando há mais de uma correspondência entre as bases. Para entender melhor o ponto, vamos criar uma base de dados chamada regioes3 que contém duas observações para a região Sudeste (transformando a região Sul em Sudeste com if_else):
+
+regioes3 <- regioes |>
+  mutate(regiao = if_else(regiao == "Sul", "Sudeste", regiao))
+
+# Se tentarmos cruzar regioes3 com territorio, não teremos erro:
+
+left_join(territorio, regioes3, by = join_by(regiao == regiao))
+
+# O código roda sem problemas e, como resultado, as duas linhas da região Sudeste são mantidas – mas, se você rodou o código localmente, verá que o R emite uma mensagem avisando que há múltiplas correspondências. Caso esse seja o resultado que você espera da operação, basta usar o argumento relationship = "many-to-many", ou relationship = "one-to-many", para indicar que todas as correspondências devem ser mantidas:
+
+left_join(regioes3, territorio, by = join_by(regiao == regiao), relationship = "many-to-many")
+
+
+# 3.3.4 Empilhando bases
+
+bind_rows(regioes, regioes3)
