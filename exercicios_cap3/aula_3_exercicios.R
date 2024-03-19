@@ -151,3 +151,20 @@ municipios_completo <- right_join(uf_municipios, municipios_pop_quilombola, by =
 # ao final, a base municipios deverá ter 6 variáveis: regiao, sigla_uf, municipio, cod_ibge, pop_total e pop_quilombola
 
 municipios_completo <- select(municipios_completo, regiao, sigla_uf, municipio, cod_ibge, pop_total, pop_quilombola, -proporcao_quilombola)
+
+
+
+##########################################
+#                                        #
+# 9. Agrupamento e resumo de variáveis I #
+#                                        #
+##########################################
+
+# Calcule a população quilombola e a população total de cada uma das regiões do país.
+
+# Agrupando por região
+municipios_novo <- group_by(municipios_completo, regiao)
+
+# Calculando a população por região
+municipios_resumo <- summarise(municipios, pop_regiao = sum(pop_total), pop_quilombola_região = sum(pop_quilombola))
+
