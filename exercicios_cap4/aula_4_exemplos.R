@@ -57,3 +57,50 @@ ggplot(eseb, aes(x = D01A_IDADE)) +
 
 # https://fmeireles.com/livro/04-cap.html#tbl-geoms
 
+
+# Escalas
+
+# podemos usar a função scale_x_discrete (ou scale_y_discrete) para mapear os códigos das faixas de idade para as faixas de idade em si:
+
+ggplot(eseb, aes(x = D01A_FX_ID)) + 
+  geom_bar() +
+  scale_x_discrete(labels = c("16 e 17 anos" = "16-17",
+                              "18 a 24 anos" = "18-24",
+                              "25 a 34 Anos" = "25-34", 
+                              "35 a 44 Anos" = "35-44",
+                              "45 a 54 Anos" = "45-54",
+                              "55 a 64 anos" = "55-64",
+                              "65 e mais" = "65+"))
+
+# A função correspondente para eixos numéricos, isto é, scale_x_continuous (ou scale_y_discrete, se for para o eixo Y), também permite mudar a escala do eixo Y de um gráfico. Um dos seus usos mais comuns é o de alterar os valores máximos e mínimos a serem exibidos no eixo desejado. Um exemplo alterando o valor máximo do eixo Y para 1000:
+
+ggplot(eseb, aes(x = D01A_FX_ID)) + 
+  geom_bar() +
+  scale_x_discrete(labels = c("16 e 17 anos" = "16-17",
+                              "18 a 24 anos" = "18-24",
+                              "25 a 34 Anos" = "25-34", 
+                              "35 a 44 Anos" = "35-44",
+                              "45 a 54 Anos" = "45-54",
+                              "55 a 64 anos" = "55-64",
+                              "65 e mais" = "65+")) + 
+  scale_y_continuous(limits = c(0, 1000))
+
+
+# Para alterar nomes dos eixos, títulos e subtítulos, podemos usar a função labs() em mais uma camada:
+
+ggplot(eseb, aes(x = D01A_FX_ID)) + 
+  geom_bar() +
+  scale_x_discrete(labels = c("16 e 17 anos" = "16-17",
+                              "18 a 24 anos" = "18-24",
+                              "25 a 34 Anos" = "25-34", 
+                              "35 a 44 Anos" = "35-44",
+                              "45 a 54 Anos" = "45-54",
+                              "55 a 64 anos" = "55-64",
+                              "65 e mais" = "65+")) +  
+  labs(title = "Entrevistados por faixa de idade",
+       subtitle = "ESEB 2022",
+       x = "Faixa de Idade",
+       y = "N") 
+
+# Coordenadas
+
