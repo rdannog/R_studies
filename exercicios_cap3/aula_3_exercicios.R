@@ -223,7 +223,7 @@ estados_ordenados <- slice(estados_ordenados, 1:5)
 estados_proporcao <- mutate(estados_resumo, taxa = (pop_quilombola_estado/pop_estado)*100000)
 
 
-# Reporte os 5 estados com as maiores proporções de pessoas quilombolas nos comentários.
+# Reporte o estado com a maior proporção de pessoas quilombolas.
 
 taxa_pop_quilombola <- arrange(estados_proporcao, -taxa)
 taxa_pop_quilombola <- select(taxa_pop_quilombola, sigla_uf, taxa)
