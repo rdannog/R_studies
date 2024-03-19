@@ -273,3 +273,29 @@ names(capitais) # nomes novos 2
 # sample_n() sorteia apenas algumas obsvervacoes de um banco
 sample_frac(capitais, 2) # sorteia duas capitais
 sample_frac(capitais, 3) # sorteia tres capitais
+
+# 3.3 Cruzar e combinar dados
+
+# Para aprendermos a fazer cruzamentos, usaremos duas bases de dados com informações sobre as cinco regiões do país. Para carregar as duas bases, chamadas de regioes e territorio e que estão no arquivo regioes.Rda10, pode usar a função load:
+
+load("regioes.Rda")
+regioes
+territorio
+
+# a base territorio tem uma linha a menos, pois não contém a região Sul. Além disso, a grafia da região Centro-Oeste está diferente nas duas bases: na base regioes, usa-se hífen; na territorio, não.
+
+# Para cruzar dados de diferentes bases, usamos as funções _join do pacote dplyr, como left_join, inner_join, full_join e right_join
+
+left_join(regioes, territorio, by = join_by(regiao == regiao))
+
+# E se quisermos manter todas as observações da base territorio e usar as da base regioes para preencher valores de população? Para além da solução mais óbvia (trocar territorio e regioes de lugar), podemos usar right_join:
+
+right_join(regioes, territorio, by = join_by(regiao == regiao))
+
+#  O dplyr também possui outras variantes de _join úteis. Considere essas duas:
+
+# junta apenas as observações correspondentes
+inner_join(regioes, territorio, by = join_by(regiao == regiao))
+
+# junta todas as observações, independente da correspondência
+full_join(regioes, territorio, by = join_by(regiao == regiao))

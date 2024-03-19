@@ -93,8 +93,14 @@ view(populacao)
 
 # Calcule o tamanho da população quilombola e a população total do Brasil.
 
-pop_quilombola_total <- sum(base_pop_quilombola$pop_quilombola)
-pop_brasil_total <- sum(populacao$pop_total)
+# pop_quilombola_total <- sum(base_pop_quilombola$pop_quilombola)
+# pop_brasil_total <- sum(populacao$pop_total)
+
+# ou
+
+summarise(populacao, pop_brasil_total = sum(pop_total)) 
+
+summarise(base_pop_quilombola, pop_quilombola_total = sum(pop_quilombola)) 
 
 
 ################################
@@ -105,4 +111,6 @@ pop_brasil_total <- sum(populacao$pop_total)
 
 # Use a variável cod_ibge para cruzar as duas bases de forma que a base resultante contenha informações sobre a população total e a população quilombola de cada município. Salve o resultado dessa operação no objeto municipios.
 
-municipios_ibge <- mutate(base_pop_quilombola, codigos = cod_ibge)
+municipios <- full_join(populacao, base_pop_quilombola, by = join_by(cod_ibge == cod_ibge))
+
+View(municipios)
