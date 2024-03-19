@@ -211,6 +211,22 @@ estados_ordenados <- slice(estados_ordenados, 1:5)
 
 ############################################
 #                                          #
-# 10. Agrupamento e resumo de variáveis II #
+#  11. Agrupamento e criação de variáveis  #
 #                                          #
 ############################################
+
+# Ainda com a base municipios, crie uma nova base chamada taxa_pop_quilombola que tenha apenas duas variáveis: sigla_uf, com a sigla de cada estado, e taxa_pop_quilombola, com o número de pessoas quilombolas por 100 mil habitantes. A base final deve ter apenas 27 linhas, uma para cada unidade da federação. Use essa base para descobrir qual é o estado com a maior taxa de pessoas quilombolas por 100 mil habitantes no país.
+
+
+# Calculando a proporção de pessoas quilombolas em relação à população total de cada estado
+
+estados_proporcao <- mutate(estados_resumo, taxa = (pop_quilombola_estado/pop_estado)*100000)
+
+
+# Reporte os 5 estados com as maiores proporções de pessoas quilombolas nos comentários.
+
+taxa_pop_quilombola <- arrange(estados_proporcao, -taxa)
+taxa_pop_quilombola <- select(taxa_pop_quilombola, sigla_uf, taxa)
+
+# MA (3971 pessoas a cada 100.000 habitantes)
+
