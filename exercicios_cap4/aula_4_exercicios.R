@@ -89,3 +89,12 @@ ggplot(provincia_resumo, aes(x = PrimeiroDeProvincia, y = pop_provincia)) +
 
 
 View(provincia_resumo)
+
+############################
+#                          #
+# 5. Temas e customizações #
+#                          #
+############################
+
+# Com o mesmo gráfico do exercício anterior, aplique um tema de sua escolha e faça customizações no gráfico
+
