@@ -49,7 +49,7 @@ ggplot(eseb, aes(x = Q10P2b)) +
   scale_x_discrete(labels = c("Jair Bolsonaro" = "Bolsonaro")) + 
   facet_wrap(~ REG, scales = "free_x") +
   labs(title = "Total de votos por candidato",
-       subtitle = "Elei??es 2022",
+       subtitle = "Eleições 2022",
        x = "Candidato",
        y = "Votos") +
   coord_flip()
