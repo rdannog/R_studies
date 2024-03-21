@@ -38,11 +38,11 @@ ggplot(eseb, aes(x = Q10P2b)) +
 
 #####################################
 #                                   #
-# 2. Gr?ficos de barras com facetas #
+# 2. Graficos de barras com facetas #
 #                                   #
 #####################################
 
-# Crie agora um gr?fico de barras que mostra o total de votos de cada candidato na amostra do Eseb, mas com pain?is para cada regi?o do pa?s. Use duas colunas para organizar os pain?is.
+# Crie agora um grafico de barras que mostra o total de votos de cada candidato na amostra do Eseb, mas com paineis para cada regiao do pais. Use duas colunas para organizar os paineis.
 
 ggplot(eseb, aes(x = Q10P2b)) + 
   geom_bar() +
