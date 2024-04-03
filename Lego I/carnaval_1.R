@@ -106,4 +106,8 @@ carnaval %>%
 
 
 # Se quisermos fazer o mesmo exercicio usando a variavel 'bairro', basta trocar 'regiao' por 'bairro':
-
+carnaval %>%
+    count(bairro) %>%
+    ggplot(aes(x = reorder(bairro, n), y = n)) +
+    geom_col() +
+    coord_flip()
