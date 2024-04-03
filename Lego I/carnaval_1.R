@@ -44,7 +44,7 @@ carnaval %>%
 
 
 # Valores com problemas: "centro", "zone oeste", "Zona norte 1". Vamos mudalos com:
-carnaval <- carnaval %>%
+carnaval <- carnaval |>
     mutate(regiao = case_when(
         regiao == "centro" ~ "Centro",
         regiao == "Zona oeste" ~ "Zona Oeste",
@@ -52,7 +52,18 @@ carnaval <- carnaval %>%
         str_detect(regiao, "Norte|norte|Tijuca") ~ "Zona Norte",
         str_detect(regiao, "Oeste|oeste|Barra") ~ "Zona Oeste",
         TRUE ~ regiao
-    ))
+    )) |>
+    mutate(publico_estimado = str_replace(publico_estimado, "\\.", "")) |>
+    mutate(publico_estimado = as.numeric(publico_estimado))
+
+
+resumo <- carnaval |> 
+    group_by(regiao) |>
+    summarise(pop_total = sum(publico_estimado))
+
+ggplot(resumo, aes(x = regiao, y = pop_total)) + 
+  geom_col() 
+
 
 
 # O que o codigo acima faz eh simples: ele cria uma nova variavel 'regiao' (sobreescreve a original)
@@ -70,17 +81,6 @@ carnaval %>%
 
 ###### str_replace
 
-carnaval <- carnaval |>
-  mutate(publico_estimado = str_replace(publico_estimado, "\\.", "")) |>
-  mutate(publico_estimado = as.numeric(publico_estimado)) 
-
-blocos_regiao <- carnaval |>
-  group_by(regiao) |>
-  summarise(total = sum(publico_estimado))
-
-ggplot(carnaval,aes(x = total))+
-  geom_bar()
-
 # E se quisermos ordenar as barras? Com ggplot2, podemos usar a funcao 'reorder', que e' uma
 # funcao auxiliar que reordena os niveis de uma variavel de acordo com outra. Por exemplo, podemos
 # reordenar 'regiao' de acordo com a quantidade de blocos que sairam em cada regiao. Para tanto,
@@ -90,8 +90,9 @@ carnaval %>%
     group_by(regiao) %>%
     summarise(n = n()) %>%
     ggplot(aes(x = reorder(regiao, n), y = n)) +
-    geom_col() +
-    coord_flip()
+    geom_col(width = 0.5, fill= "steelblue") +
+    coord_flip()+
+    theme(panel.grid = element_blank())
 
 
 # Coisas a notar: como passamos um eixo Y para aes(), tivemos que usar 'geom_col' ao inves de 'geom_bar'.
@@ -105,8 +106,4 @@ carnaval %>%
 
 
 # Se quisermos fazer o mesmo exercicio usando a variavel 'bairro', basta trocar 'regiao' por 'bairro':
-carnaval %>%
-    count(bairro) %>%
-    ggplot(aes(x = reorder(bairro, n), y = n)) +
-    geom_col() +
-    coord_flip()
+
