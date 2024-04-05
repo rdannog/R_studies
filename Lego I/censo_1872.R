@@ -72,9 +72,9 @@ censo_raca %>%
   geom_col(width = 0.8, alpha = 0.9) +
   scale_fill_viridis_d(direction = -1) +
   scale_y_continuous(expand = c(0, 0), breaks = seq(0, 6, by = 0.5)) +
-  theme_minimal(base_size = 22) + 
-  theme(plot.title = element_text(face = "bold", size = 42),
-        plot.subtitle = element_text(size = 26),
+  theme_minimal(base_size = 12) + 
+  theme(plot.title = element_text(face = "bold", size = 32),
+        plot.subtitle = element_text(size = 16),
         legend.position = "top",
         panel.grid.major.y = element_blank()) +
   coord_flip() +
@@ -89,9 +89,9 @@ censo_raca %>%
   geom_col(width = 0.8, alpha = 0.9) +
   scale_fill_viridis_d(direction = -1) +
   scale_y_continuous(expand = c(0, 0), breaks = seq(0, 6, by = 0.5)) +
-  theme_minimal(base_size = 22) + 
-  theme(plot.title = element_text(face = "bold", size = 42),
-        plot.subtitle = element_text(size = 26),
+  theme_minimal(base_size = 12) + 
+  theme(plot.title = element_text(face = "bold", size = 32),
+        plot.subtitle = element_text(size = 16),
         legend.position = "top",
         panel.grid.major.y = element_blank()) +
   coord_flip() +

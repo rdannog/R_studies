@@ -47,4 +47,11 @@ elections96 %>%
 
 
 
-
+elections96 |>
+  group_by(regiao) |>
+  summarise(n = n()) |>
+  ggplot(aes(x = reorder(regiao, n), y = n)) +
+  geom_col(width = 0.7, fill= "steelblue") +
+  coord_flip()+
+  theme(panel.grid = element_blank(),
+        panel.background = element_blank())
