@@ -47,13 +47,31 @@ teses_filtradas <- teses_sociologia |>
   filter(str_detect(palavras_chave,"ensino superior|desigualdade|juventude"))
 
 
-## 3. Evolução ao longo do tempo
 
-#Crie uma visualização que reporte de forma sucinta e informativa a produção de teses e dissertações no seu tema defendidos por ano.
+### 3. Evolução ao longo do tempo ###
+
+## Crie uma visualização que reporte de forma sucinta e informativa a produção de teses e dissertações no seu tema defendidos por ano.
 
 
+# Criando uma tabela de contagem de teses por ano e palavra-chave
 
-ggplot(teses_filtradas, aes(x = ano)) + 
-  geom_bar() +
-  labs(title = "Teses e dissertações de sociologia, defendidas entre 1987-2022", legend= "(Palavras-Chave: ensino superior; estratificação; educação; juventude)", y= "Frequência de Defesas", x= "Anos")
+teses_por_ano_subtema <- teses_filtradas |>
+  mutate(subtema = case_when(
+    str_detect(palavras_chave, "ensino superior") ~ "Ensino Superior",
+    str_detect(palavras_chave, "desigualdade") ~ "Desigualdade",
+    str_detect(palavras_chave, "juventude") ~ "Juventude",
+    TRUE ~ "Outros"
+  )) |>
+  count(ano, subtema) |>
+  rename(frequencia = n)
 
+# Criando o gráfico de barras
+
+ggplot(teses_por_ano_subtema, aes(x = ano, y = frequencia, fill = subtema)) +
+  geom_bar(stat = "identity", position = "stack") +
+  labs(title = "Produção de Teses e Dissertações em Sociologia, por Palavra-Chave (1987-2022)",
+       x = "Ano de Defesa", y = "Número de Teses e Dissertações") +
+  scale_fill_manual(values = c("#66c2a5", "#fc8d62", "#8da0cb", "#e78ac3"), # Escolha de cores sóbrias
+                    labels = c("Ensino Superior", "Desigualdade", "Juventude", "Outros")) + # Rótulos da legenda
+  theme_minimal() +
+  theme(legend.position = "bottom") # Posição da legenda
