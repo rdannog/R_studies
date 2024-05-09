@@ -4,6 +4,8 @@
 #   Dan Nogueira da Silva     #
 ###############################
 
+### ---------------------------------------------
+
 ### Nesta lista, o objetivo será analisar a produção de teses e dissertações de programas de pós-graduação notas 4, 5, 6 e 7 na Capes, das áreas de Sociologia ou Ciência Política e Relações Internacionais, entre os anos de 1987 e 2022.
 
 ### ---------------------------------------------
@@ -27,7 +29,7 @@ banco_teses_total <- map_df(c("csvs/capes_1987-1992.csv", "csvs/capes_1993-1998.
 
 banco_programas_total <- import("programas.csv")  
 
-# Juntando informações sobre os programas com informações de teses e dissertações
+# Juntando informações sobre os programas com informações sobre as teses e dissertações
 
 teses_e_programas <- banco_teses_total |>
   left_join(banco_programas_total, by = c("codigo_programa" = "CD_PROGRAMA"))
@@ -43,8 +45,8 @@ teses_sociologia <- teses_e_programas |>
 
 # Escolha 3 palavras-chave relevantes para o seu problema de pesquisa.
 
-teses_filtradas <- teses_sociologia |>
-  filter(str_detect(palavras_chave,"ensino superior|desigualdade|juventude"))
+teses_relevantes <- teses_sociologia |>
+  filter(str_detect(palavras_chave,"ensino superior|desigualdade|educação"))
 
 
 
@@ -55,23 +57,25 @@ teses_filtradas <- teses_sociologia |>
 
 # Criando uma tabela de contagem de teses por ano e palavra-chave
 
-teses_por_ano_subtema <- teses_filtradas |>
+teses_por_ano_subtema <- teses_relevantes |>
   mutate(subtema = case_when(
     str_detect(palavras_chave, "ensino superior") ~ "Ensino Superior",
     str_detect(palavras_chave, "desigualdade") ~ "Desigualdade",
-    str_detect(palavras_chave, "juventude") ~ "Juventude",
+    str_detect(palavras_chave, "educação") ~ "Educação",
     TRUE ~ "Outros"
   )) |>
   count(ano, subtema) |>
   rename(frequencia = n)
 
-# Criando o gráfico de barras
+# Criando o gráfico de barras empilhadas
 
 ggplot(teses_por_ano_subtema, aes(x = ano, y = frequencia, fill = subtema)) +
   geom_bar(stat = "identity", position = "stack") +
   labs(title = "Produção de Teses e Dissertações em Sociologia, por Palavra-Chave (1987-2022)",
        x = "Ano de Defesa", y = "Número de Teses e Dissertações") +
-  scale_fill_manual(values = c("#66c2a5", "#fc8d62", "#8da0cb", "#e78ac3"), # Escolha de cores sóbrias
-                    labels = c("Ensino Superior", "Desigualdade", "Juventude", "Outros")) + # Rótulos da legenda
+  scale_fill_manual(values = c("#66c2a5", "#fc8d62", "#8da0cb", "#e78ac3"),
+                    labels = c("Ensino Superior", "Desigualdade", "Educação", "Outros"),
+                    name = "Legenda:") +
+  scale_x_continuous(breaks = unique(teses_por_ano_subtema$ano)) +
   theme_minimal() +
-  theme(legend.position = "bottom") # Posição da legenda
+  theme(panel.grid.minor = element_blank())
