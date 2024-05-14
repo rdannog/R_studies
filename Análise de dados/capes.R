@@ -1,7 +1,6 @@
 ###############################
-#  Lista II: Análise de dados #
-#                             #
-#   Dan Nogueira da Silva     #
+#  Lista II: Análise de dados #
+#    Dan Nogueira da Silva    #
 ###############################
 
 ### ---------------------------------------------
@@ -11,35 +10,36 @@
 ### ---------------------------------------------
 
 
-### Carregando pacotes necessários
+### Carregando pacotes necessários ###
 
 library(tidyverse)
 library(rio)
 library(sf)
 library(geobr)
 library(gt)
+library(plotly)
 
 ### 1. Importando arquivos ###
 
-# Usando map_df é possível combinar todas as planilhas contendo as teses e dissertações defendidas entre 1987 a 2022, em um único tibble
+banco_defesas_original <- map_df(c("csvs/capes_1987-1992.csv", "csvs/capes_1993-1998.csv", "csvs/capes_1999-2004.csv", "csvs/capes_2005-2010.csv", "csvs/capes_2011-2016.csv", "csvs/capes_2017-2022.csv"),read_delim, delim = ",")
 
-# Optei por utilizar o map_df pois nesse caso achei mais prático do que usar o loop, por economizar linhas e espaço de memória
+banco_programas_original <- import("programas.csv") 
 
-banco_teses_total <- map_df(c("csvs/capes_1987-1992.csv", "csvs/capes_1993-1998.csv", "csvs/capes_1999-2004.csv", "csvs/capes_2005-2010.csv", "csvs/capes_2011-2016.csv", "csvs/capes_2017-2022.csv"),read_delim, delim = ",")
 
-# Carregando a planilha com informações sobre os programas de pós-graduação
+# Para importar a base de dados contendo as dissertações e teses de programas na CAPES, optei por utilizar o map_df pois nesse caso achei mais prático do que usar o loop, por economizar linhas e espaço de memória
+# Usando map_df é possível combinar todas as planilhas contendo as teses e dissertações defendidas entre 1987 a 2022, em um único tibble. Essa planilha possui 13 variáveis: código do programa,ano, sigla,nome da instituição, nome do programa, grande área, área de conhecimento, área de avaliação,autor, titulo, nivel, palavas-chave e resumo. Cada observação diz respeito a uma defesa.
 
-banco_programas_total <- import("programas.csv")  
+# Para carregar a planilha com informações sobre os programas de pós-graduação, usei a função import() do pacote rio.Essa planilha possui 3 variáveis: código do programa, estado e conceito CAPES. Cada observação diz respeito a um programa de pós-graduação.
 
-# Juntando informações sobre os programas com informações sobre as teses e dissertações
 
-teses_e_programas <- banco_teses_total |>
-  left_join(banco_programas_total, by = c("codigo_programa" = "CD_PROGRAMA"))
+teses_e_programas <- banco_defesas_original |>
+  left_join(banco_programas_original, by = c("codigo_programa" = "CD_PROGRAMA"))
 
-# Ao analisar a lista, percebi alguns missings na base e tentei arrumar a lista por siglas, estados e regiao
+# Para concatenar as informações sobre os programas com as informações sobre as defesas, utilizei a função left_join para juntar as informações partindo de uma variável em comum, o código do programa.
+
 
 banco_tidy <- teses_e_programas |>
-  mutate(UF = case_when( ##
+  mutate(UF = case_when( 
     str_detect(sigla_ies, "RJ|RIO|UENF|UFF|UCAM") ~ "RJ",
     str_detect(sigla_ies, "SP|UNICAMP") ~ "SP",
     str_detect(sigla_ies, "ES|UVV") ~ "ES",
@@ -78,59 +78,65 @@ banco_tidy <- teses_e_programas |>
     TRUE ~ "Não reportado"
   ))
 
+# Ao analisar a nova base, percebi alguns missings na variável UF. Tentei arrumar a lista me guiando a partir das colunas siglas_ies e UF. Além disso, incluí a variável regiao, que vai ser útil mais à frente.
 
-# Filtrando apenas observações da minha área de interesse, de programas com notas 4, 5, 6, e 7
-
-# Por algum motivo os missings continuavam a ser considerados, então achei melhor filtrar por negação
 
 teses_sociologia <- banco_tidy |>
-  filter(CONCEITO != "NA|3|A") |>
-  filter(str_detect(nome_programa, "SOCIOLOGIA"))
+  filter(CONCEITO != "NA|3|A") |>
+  filter(str_detect(nome_programa, "SOCIOLOGIA"))
+
+# Após limpar a lista, filtrei apenas observações que continham programas com notas maiores que 4 sobre minha área de interesse (sociologia) 
+# Por algum motivo os missings continuavam a ser considerados quando eu utilizava a lógica CONCEITO == 4|5|6|7, então achei melhor filtrar usando a negação das observações indesejadas.
 
 
 ### 2. Seleção de palavras-chave ###
 
-# Escolha 3 palavras-chave relevantes para o seu problema de pesquisa.
-
 teses_relevantes <- teses_sociologia |>
-  filter(str_detect(palavras_chave,"ensino superior|desigualdade|educação"))
+ filter(str_detect(palavras_chave,"ensino superior|desigualdade|educação"))
+
+# Para o meu desenho de pesquisa, as 3 palavras-chave mais interessantes são ensino superior, desigualdade e educação. Filtrei a base para mostrar apenas defesas que se enquadravam em pelo menos uma das 3 palavras-chave.
 
 
 
 ### 3. Evolução ao longo do tempo ###
 
-## Crie uma visualização que reporte de forma sucinta e informativa a produção de teses e dissertações no seu tema defendidos por ano.
-
-
-# Criando uma tabela de contagem de teses por ano e palavra-chave
-
 teses_por_ano_subtema <- teses_relevantes |>
-  mutate(subtema = case_when(
-    str_detect(palavras_chave, "ensino superior") ~ "Ensino Superior",
-    str_detect(palavras_chave, "desigualdade") ~ "Desigualdade",
-    str_detect(palavras_chave, "educação") ~ "Educação",
-    TRUE ~ "Outros"
-  )) |>
-  count(ano, subtema) |>
-  rename(frequencia = n)
+ mutate(subtema = case_when(
+  str_detect(palavras_chave, "ensino superior") ~ "Ensino Superior",
+  str_detect(palavras_chave, "desigualdade") ~ "Desigualdade",
+  str_detect(palavras_chave, "educação") ~ "Educação",
+  TRUE ~ "Outros"
+ )) |>
+ count(ano, subtema) |>
+ rename(frequencia = n) 
 
-## Criando o gráfico
+grafico_defesas_ano_subtema <- plot_ly(teses_por_ano_subtema, x = ~ano, y = ~frequencia, type = 'bar', name = ~subtema)
+grafico_defesas_ano_subtema <- grafico_defesas_ano_subtema |> 
+  layout(title = 'Produção de Teses e Dissertações em Sociologia, por Palavra-Chave (1987-2022)', yaxis = list(title = 'Número de teses e dissertações'), xaxis = list(title = 'Ano da defesa'), barmode = 'stack')
 
-# Escolhi o gráfico de barras empilhadas para visualizar quantas observações foram feitas para cada ano do eixo x, qualificando a frequência por palavras-chave.Assim consigo ver quantas teses foram defendidas em cada ano, ao mesmo tempo em que consigo ver a frequência de cada subtema que considerei relevante para minha pesquisa.
+grafico_defesas_ano_subtema
 
-ggplot(teses_por_ano_subtema, aes(x = ano, y = frequencia, fill = subtema)) +
-  geom_bar(stat = "identity", position = "stack") +
-  labs(title = "Produção de Teses e Dissertações em Sociologia, por Palavra-Chave (1987-2022)",
-       x = "
-          Ano de Defesa", y = "Número de Teses e Dissertações
-       ") +
-  scale_fill_manual(values = c("#66c2a5", "#fc8d62", "#8da0cb", "#e78ac3"),
-                    labels = c("Ensino Superior", "Desigualdade", "Educação", "Outros"),
-                    name = "Legenda:") +
-  scale_x_continuous(breaks = unique(teses_por_ano_subtema$ano)) +
-  theme_minimal() +
-  theme(panel.grid.minor = element_blank())+
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
+
+  ggplot(teses_por_ano_subtema, aes(x = ano, y = frequencia, fill = subtema)) +
+    geom_bar(stat = "identity", position = "stack") +
+    labs(title = "Produção de Teses e Dissertações em Sociologia, por Palavra-Chave (1987-2022)",
+         x = "
+            Ano de Defesa", y = "Número de Teses e Dissertações
+        ") +
+    scale_fill_manual(values = c("#66c2a5", "#fc8d62", "#8da0cb", "#e78ac3"),
+                      labels = c("Ensino Superior", "Desigualdade", "Educação", "Outros"),
+                      name = "Legenda:") +
+    scale_x_continuous(breaks = unique(teses_por_ano_subtema$ano)) +
+    theme_classic() +
+    theme(panel.grid.minor = element_blank())+
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
+
+
+# Para criar uma visualização que reporte de forma sucinta e informativa a produção de teses e dissertações no meu tema por ano, primeiro era preciso criar uma tabela de contagem das ocorrências de defesas por ano e palavra-chave. Criei a variável subtema, que classificava as defesas  por palavra-chave correspondente. Depois contei quantas ocorrências cada variável ano tinha em relação a cada observação da variável subtema.
+
+# Para visualizar, escolhi o gráfico de barras empilhadas para ver quantas observações foram feitas para cada ano do eixo x, qualificando a frequência por palavras-chave. Assim consigo ver quantas teses foram defendidas em cada ano, ao mesmo tempo em que consigo ver a frequência de cada subtema que considerei relevante para minha pesquisa.O gráfico em barras empilhadas é perfeito para visualizar a relação entre uma variável numérica e uma variável categórica.
+
+# Optei por utilizar o pacote plotly para tornar o gráfico interativo.
 
 
 ### 4. Diferenças regionais
@@ -145,39 +151,39 @@ coordenadas_estados <- read_state() # função geobr
 #Agrupando teses por estado e juntando com coordenadas do pacote geobr
 
 teses_por_estado <- teses_sociologia |>
-  group_by(UF) |>
-  summarise(total_trabalhos_uf = n()) |>
-  full_join(coordenadas_estados, by = c("UF" = "abbrev_state")) |>
-  st_as_sf()
+ group_by(UF) |>
+ summarise(total_trabalhos_uf = n()) |>
+ full_join(coordenadas_estados, by = c("UF" = "abbrev_state")) |>
+ st_as_sf()
 
 # Mapa da frequência de defesas por estado
 
-  ggplot(teses_por_estado)+
-    geom_sf(aes(fill = total_trabalhos_uf))+
-    scale_fill_viridis_c(name = "Número de Trabalhos") +
-    theme_void() +
-    labs(title = "Frequência de Trabalhos de Sociologia Defendidos por Unidade da Federação",
-         subtitle = "1987 - 2022",
-         caption = "FONTE: CAPES") #usei a gambiarra sugerida pelo Rodrigo
-  
+ ggplot(teses_por_estado)+
+   geom_sf(aes(fill = total_trabalhos_uf))+
+   scale_fill_viridis_c(name = "Número de Trabalhos") +
+   theme_void() +
+   labs(title = "Frequência de Trabalhos de Sociologia Defendidos por Unidade da Federação",
+        subtitle = "1987 - 2022",
+        caption = "FONTE: CAPES") #usei a gambiarra sugerida pelo Rodrigo
+ 
 #Agrupando teses por regiao e juntando com coordenadas do pacote geobr
 
-  teses_por_regiao <- teses_sociologia |>
-    group_by(regiao) |>
-    summarise(total_trabalhos_regiao = n()) |>
-    full_join(coordenadas_estados, by = c("regiao" = "name_region")) |>
-    st_as_sf()
-  
+ teses_por_regiao <- teses_sociologia |>
+  group_by(regiao) |>
+  summarise(total_trabalhos_regiao = n()) |>
+  full_join(coordenadas_estados, by = c("regiao" = "name_region")) |>
+  st_as_sf()
+ 
 # Mapa da frequência de trabalhos por região
 
-  
-  ggplot(teses_por_regiao)+
-    geom_sf(aes(fill = total_trabalhos_regiao))+
-    scale_fill_viridis_c(name = "Número de Trabalhos") +
-    theme_void() +
-    labs(title = "Frequência de Trabalhos de Sociologia Defendidos por Região do País",
-         subtitle = "1987 - 2022",
-         caption = "FONTE: CAPES")
+ 
+ ggplot(teses_por_regiao)+
+   geom_sf(aes(fill = total_trabalhos_regiao))+
+   scale_fill_viridis_c(name = "Número de Trabalhos") +
+   theme_void() +
+   labs(title = "Frequência de Trabalhos de Sociologia Defendidos por Região do País",
+        subtitle = "1987 - 2022",
+        caption = "FONTE: CAPES")
 
 teses_por_regiao |>
   ggplot(aes(fill = total_trabalhos_regiao, label =  paste(abbrev_state, " (", total_trabalhos_regiao, ")", sep = "")))+
@@ -191,23 +197,23 @@ teses_por_regiao |>
 # Gráfico da frequência de trabalhos por unidade da federação
 
 ggplot(teses_por_estado, aes(x = UF, y = total_trabalhos_uf, fill = UF)) +
-  geom_bar(stat = "identity") +
-  labs(title = "Frequência de Trabalhos Defendidos por Unidade da Federação",
-       x = "Unidade da Federação", y = "Total de Trabalhos Defendidos")+
-theme_light() +
-  theme(panel.grid.minor = element_blank()) +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
+ geom_bar(stat = "identity") +
+ labs(title = "Frequência de Trabalhos Defendidos por Unidade da Federação",
+      x = "Unidade da Federação", y = "Total de Trabalhos Defendidos")+
+ theme_light() +
+ theme(panel.grid.minor = element_blank()) +
+ theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
 
 
 # Gráfico da frequência de trabalhos por região
 
 ggplot(teses_por_estado, aes(x = regiao, y = total_trabalhos, fill = regiao)) +
-  geom_sf(stat = "identity") +
-  labs(title = "Frequência de Trabalhos Defendidos por Região",
-       x = "Região", y = "Total de Trabalhos Defendidos")+
-  theme_minimal() +
-  theme(panel.grid.minor = element_blank()) +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) # rotacionar ajuda na legibilidade de legendas longas
+ geom_sf(stat = "identity") +
+ labs(title = "Frequência de Trabalhos Defendidos por Região",
+      x = "Região", y = "Total de Trabalhos Defendidos")+
+ theme_minimal() +
+ theme(panel.grid.minor = element_blank()) +
+ theme(axis.text.x = element_text(angle = 45, hjust = 1)) # rotacionar ajuda na legibilidade de legendas longas
 
 
 # -----------------------------------------------------------------------------------------
