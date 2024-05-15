@@ -1,0 +1,61 @@
+---
+title: "Lista I: Desenho de pesquisa"
+date: "22/04/2024"
+author:
+  - name: Dan Nogueira da Silva
+    email: dan.nogueira@ufrj.br
+abstract: Durante a graduacao, os estudos em desigualdade e estratificacao na educacao me chamaram bastante atencao. Minha pergunta de pesquisa intenciona desvendar de que formas a participacao em iniciativas da sociedade civil impactam a inser??o e perman?ncia de estudantes pobres no ensino superior, explorando os mecanismos mediadores por tras dessa relacao.
+format:
+  pdf:
+    toc: false
+    number-sections: false
+    colorlinks: true
+    fig-pos: 'ht'
+    geometry:
+      - top=25mm
+      - left=20mm
+      - right=20mm
+      - bottom=25mm
+bibliography: referencias.bib
+lang: pt
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+
+# Pacotes
+library(modelsummary)
+library(tidyverse)
+```
+
+# Definicao do problema de pesquisa
+
+### *1. Delimitacao disciplinar*
+
+Sociologia da Educacao
+
+### *2. Problema de pesquisa*
+
+A pobreza tem graves impactos na trajetoria educacional e no destino dos estudantes. As diferencas no desempenho entre jovens de diferentes origens socioeconomicas sao alimentadas por diversos fatores, tanto dentro quanto fora da escola. Nesse sentido, as iniciativas da sociedade civil, como ONGs, movimentos sociais e programas governamentais, surgem como mediadores, buscando garantir o acesso a educacao de qualidade para jovens de origem popular e promover mobilidade social atraves da educacao. Sendo assim, busco explorar se
+
+> As iniciativas da sociedade civil contribuem para mitigar desigualdades educacionais no ensino superior?
+
+### 3. Definicao de conceitos
+
+-   **Desigualdades Educacionais:** Barreiras que limitam o acesso e o sucesso na educacao, perpetuando a exclusao social.
+
+-   **Pobreza:** Condicao socioeconomica que restringe as oportunidades de vida e a participacao social.
+
+-   **Participacao Escolar e Extracurricular:** Engajamento que influencia o desempenho, o desenvolvimento de habilidades e as redes de socializacao dos estudantes.
+
+-   **Mobilidade Social:** Ascensao (ou descenso) na estrutura social, moldada por educacao, renda, ocupacao e status.
+
+-   **Destino:** Trajetoria de vida definida por fatores sociais, economicos e educacionais, incluindo as desigualdades educacionais, que impactam as oportunidades de trabalho, renda, saude e bem-estar dos individuos.
+
+### *4 .Operacionalizacao de variaveis*
+
+### *5. Variaveis*
+
+**Variavel Dependente:** Insercao e permanencia de estudantes pobres no ensino superior.
+
+**Variavel Independente:** Participacao em iniciativas da sociedade civil.
