@@ -117,7 +117,18 @@ grafico_defesas_ano_subtema <- grafico_defesas_ano_subtema |>
 grafico_defesas_ano_subtema
 
 
-  
+  ggplot(teses_por_ano_subtema, aes(x = ano, y = frequencia, fill = subtema)) +
+    geom_bar(stat = "identity", position = "stack") +
+    labs(title = "Produção de Teses e Dissertações em Sociologia, por Palavra-Chave (1987-2022)",
+         x = "
+            Ano de defesa", y = "Número de defesas
+        ") +
+    scale_x_continuous(breaks = unique(teses_por_ano_subtema$ano)) +
+    theme_classic() +
+    theme(panel.grid.minor = element_blank())+
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+    scale_fill_viridis_d(labels = c("Ensino Superior", "Desigualdade", "Educação", "Outros"),
+                         name = "Legenda:")
 
 
 # Para criar uma visualização que reporte de forma sucinta e informativa a produção de teses e dissertações no meu tema por ano, primeiro era preciso criar uma tabela de contagem das ocorrências de defesas por ano e palavra-chave. Criei a variável subtema, que classificava as defesas  por palavra-chave correspondente. Depois contei quantas ocorrências cada variável ano tinha em relação a cada observação da variável subtema.

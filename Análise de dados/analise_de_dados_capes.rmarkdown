@@ -33,6 +33,7 @@ library(plotly)
 library(knitr)
 ```
 
+
 # Tendências na produção de teses e dissertações em Sociologia
 
 ## Metodologia
@@ -285,3 +286,4 @@ resumo <- teses_relevantes |>
 
 # write_csv(resumo, "resumo.csv")
 ```
+
