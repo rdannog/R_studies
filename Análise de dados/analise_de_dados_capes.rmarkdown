@@ -250,19 +250,18 @@ trabalhos_por_programa <- pivot_wider(trabalhos_por_programa, names_from = tese_
 
 ##### Tabela 1: Programas com o maior número de trabalhos em sociologia 
 
-|                       |                           |            |              |       |
-|-----------------------|---------------------------|------------|--------------|-------|
-| Instituição de ensino | Programa                  | Nota CAPES | Dissertações | Teses |
-| USP                   | SOCIOLOGIA                | 6          | 489          | 560   |
-| UFRJ                  | SOCIOLOGIA E ANTROPOLOGIA | 7          | 530          | 292   |
-| UFC                   | SOCIOLOGIA                | 5          | 533          | 265   |
-| UNB                   | SOCIOLOGIA                | 7          | 378          | 328   |
-| UFRGS                 | SOCIOLOGIA                | 7          | 451          | 245   |
-| UFSC                  | SOCIOLOGIA POLÍTICA       | 5          | 448          | 153   |
-| UNICAMP               | SOCIOLOGIA                | 6          | 434          | 151   |
-| UFPE                  | SOCIOLOGIA                | 5          | 356          | 228   |
-| UFPB-JP               | SOCIOLOGIA                | 5          | 379          | 161   |
-| UFPR                  | SOCIOLOGIA                | 5          | 363          | 169   |
+| Instituição | Programa                  | Nota CAPES | Dissertações | Teses |
+|-------------|---------------------------|------------|--------------|-------|
+| USP         | SOCIOLOGIA                | 6          | 489          | 560   |
+| UFRJ        | SOCIOLOGIA E ANTROPOLOGIA | 7          | 530          | 292   |
+| UFC         | SOCIOLOGIA                | 5          | 533          | 265   |
+| UNB         | SOCIOLOGIA                | 7          | 378          | 328   |
+| UFRGS       | SOCIOLOGIA                | 7          | 451          | 245   |
+| UFSC        | SOCIOLOGIA POLÍTICA       | 5          | 448          | 153   |
+| UNICAMP     | SOCIOLOGIA                | 6          | 434          | 151   |
+| UFPE        | SOCIOLOGIA                | 5          | 356          | 228   |
+| UFPB-JP     | SOCIOLOGIA                | 5          | 379          | 161   |
+| UFPR        | SOCIOLOGIA                | 5          | 363          | 169   |
 
 ``` r
 ggplot(trabalhos_por_programa, aes(x =reorder(sigla_ies, -(tese+dissertacao)), y=  tese + dissertacao, fill = nome_programa)) +
