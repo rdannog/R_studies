@@ -5,7 +5,7 @@
 
 ### ---------------------------------------------
 
-### Nesta lista, o objetivo será analisar a produção de teses e dissertações de programas de pós-graduação notas 4, 5, 6 e 7 na Capes, das áreas de Sociologia ou Ciência Política e Relações Internacionais, entre os anos de 1987 e 2022.
+### Nesta lista, o objetivo será analisar a produção de teses e dissertações de programas de pós-graduação com notas 4, 5, 6 e 7 na CAPES, da área de Sociologia, entre os anos de 1987 e 2022.
 
 ### ---------------------------------------------
 
@@ -21,9 +21,9 @@ library(plotly)
 
 ### 1. Importando arquivos ###
 
-banco_defesas_original <- map_df(c("csvs/capes_1987-1992.csv", "csvs/capes_1993-1998.csv", "csvs/capes_1999-2004.csv", "csvs/capes_2005-2010.csv", "csvs/capes_2011-2016.csv", "csvs/capes_2017-2022.csv"),read_delim, delim = ",")
+banco_defesas <- map_df(c("csvs/capes_1987-1992.csv", "csvs/capes_1993-1998.csv", "csvs/capes_1999-2004.csv", "csvs/capes_2005-2010.csv", "csvs/capes_2011-2016.csv", "csvs/capes_2017-2022.csv"),read_delim, delim = ",")
 
-banco_programas_original <- import("programas.csv") 
+banco_programas <- import("programas.csv") 
 
 
 # Para importar a base de dados contendo as dissertações e teses de programas na CAPES, optei por utilizar o map_df pois nesse caso achei mais prático do que usar o loop, por economizar linhas e espaço de memória
@@ -32,8 +32,8 @@ banco_programas_original <- import("programas.csv")
 # Para carregar a planilha com informações sobre os programas de pós-graduação, usei a função import() do pacote rio.Essa planilha possui 3 variáveis: código do programa, estado e conceito CAPES. Cada observação diz respeito a um programa de pós-graduação.
 
 
-teses_e_programas <- banco_defesas_original |>
-  left_join(banco_programas_original, by = c("codigo_programa" = "CD_PROGRAMA"))
+teses_e_programas <- banco_defesas |>
+  left_join(banco_programas, by = c("codigo_programa" = "CD_PROGRAMA"))
 
 # Para concatenar as informações sobre os programas com as informações sobre as defesas, utilizei a função left_join para juntar as informações partindo de uma variável em comum, o código do programa.
 
@@ -117,18 +117,7 @@ grafico_defesas_ano_subtema <- grafico_defesas_ano_subtema |>
 grafico_defesas_ano_subtema
 
 
-  ggplot(teses_por_ano_subtema, aes(x = ano, y = frequencia, fill = subtema)) +
-    geom_bar(stat = "identity", position = "stack") +
-    labs(title = "Produção de Teses e Dissertações em Sociologia, por Palavra-Chave (1987-2022)",
-         x = "
-            Ano de defesa", y = "Número de defesas
-        ") +
-    scale_x_continuous(breaks = unique(teses_por_ano_subtema$ano)) +
-    theme_classic() +
-    theme(panel.grid.minor = element_blank())+
-    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-    scale_fill_viridis_d(labels = c("Ensino Superior", "Desigualdade", "Educação", "Outros"),
-                         name = "Legenda:")
+  
 
 
 # Para criar uma visualização que reporte de forma sucinta e informativa a produção de teses e dissertações no meu tema por ano, primeiro era preciso criar uma tabela de contagem das ocorrências de defesas por ano e palavra-chave. Criei a variável subtema, que classificava as defesas  por palavra-chave correspondente. Depois contei quantas ocorrências cada variável ano tinha em relação a cada observação da variável subtema.
