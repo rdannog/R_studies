@@ -121,15 +121,14 @@ grafico_defesas_ano_subtema
     geom_bar(stat = "identity", position = "stack") +
     labs(title = "Produção de Teses e Dissertações em Sociologia, por Palavra-Chave (1987-2022)",
          x = "
-            Ano de Defesa", y = "Número de Teses e Dissertações
+            Ano de defesa", y = "Número de defesas
         ") +
-    scale_fill_manual(values = c("#66c2a5", "#fc8d62", "#8da0cb", "#e78ac3"),
-                      labels = c("Ensino Superior", "Desigualdade", "Educação", "Outros"),
-                      name = "Legenda:") +
     scale_x_continuous(breaks = unique(teses_por_ano_subtema$ano)) +
     theme_classic() +
     theme(panel.grid.minor = element_blank())+
-    theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+    scale_fill_viridis_d(labels = c("Ensino Superior", "Desigualdade", "Educação", "Outros"),
+                         name = "Legenda:")
 
 
 # Para criar uma visualização que reporte de forma sucinta e informativa a produção de teses e dissertações no meu tema por ano, primeiro era preciso criar uma tabela de contagem das ocorrências de defesas por ano e palavra-chave. Criei a variável subtema, que classificava as defesas  por palavra-chave correspondente. Depois contei quantas ocorrências cada variável ano tinha em relação a cada observação da variável subtema.
@@ -185,8 +184,8 @@ teses_por_estado <- teses_sociologia |>
         subtitle = "1987 - 2022",
         caption = "FONTE: CAPES")
 
-teses_por_regiao |>
-  ggplot(aes(fill = total_trabalhos_regiao, label =  paste(abbrev_state, " (", total_trabalhos_regiao, ")", sep = "")))+
+teses_por_estado |>
+  ggplot(aes(fill = total_trabalhos_uf, label =  paste(UF, " (", total_trabalhos_uf, ")", sep = "")))+
   geom_sf()+
   geom_sf_label(fill = "white", size = 1.9, nudge_x = 0.5)+
   scale_fill_viridis_c()+
@@ -222,14 +221,45 @@ ggplot(teses_por_estado, aes(x = regiao, y = total_trabalhos, fill = regiao)) +
 
 ## Calcule o total de teses e de dissertações defendidas por programa de pós-graduação. Feito isso, reporte em uma tabela o número de trabalhos defendidos pelos 10 programas com maior produção.
 
-## A tabela final deve reportar 4 colunas: nome do programa; nota na Capes; total de dissertações; etotal de teses defendidas no programa. Apresente o resultado da tabela ordenando os programas pelo total de teses defendidas, do maior para o menor. O resultado precisa ser uma tabela, e não output de console.
+## A tabela final deve reportar 4 colunas: nome do programa; nota na Capes; total de dissertações; e total de teses defendidas no programa. Apresente o resultado da tabela ordenando os programas pelo total de teses defendidas, do maior para o menor. O resultado precisa ser uma tabela, e não output de console.
 
 
 trabalhos_por_programa <- teses_sociologia |>
   mutate(tese_ou_defesa = case_when(
-    str_detect(nivel, "Mestrado|MESTRADO|MESTRADO PROFISSIONAL") ~ "Defesa",
-    str_detect(nivel, "Doutorado|DOUTORADO") ~ "Tese",
+    str_detect(nivel, "Mestrado|MESTRADO|MESTRADO PROFISSIONAL") ~ "dissertacao",
+    str_detect(nivel, "Doutorado|DOUTORADO") ~ "tese",
   )) |>
-  count(sigla_ies,nome_programa, tese_ou_defesa) |>
-  rename(trabalhos = n)
+  count(sigla_ies, nome_programa, tese_ou_defesa, CONCEITO) |>
+  rename(trabalhos = n) 
 
+trabalhos_por_programa <- pivot_wider(trabalhos_por_programa, names_from = tese_ou_defesa, values_from = trabalhos) |>
+  mutate(tese = case_when(
+    tese > 0  ~ tese,
+    TRUE ~ 0
+  )) |>
+  mutate(total_defesas = dissertacao + tese) |>
+  arrange(-total_defesas)|>
+  slice(1:10)|>
+  select(-total_defesas)
+
+
+ggplot(trabalhos_por_programa, aes(x =reorder(sigla_ies, -(tese+dissertacao)), y=  tese + dissertacao, fill = nome_programa)) +
+  geom_bar(stat = "identity", position = "stack") +
+  labs(title = "   Produção de Teses e Dissertações em Sociologia (1987-2022)",
+       x = "
+            Sigla da instituição de ensino superior", y = "Número de defesas
+        ") +
+  theme_classic() +
+  theme(panel.grid.minor = element_blank())+
+  scale_fill_viridis_d(name = "Nome do programa")
+
+# -----------------------------------------------------------------------------------------
+
+### 6. Exportação
+
+## Crie uma base menor que contenha apenas as seguintes variáveis: ano, estado, programa, título,resumo e autor(a). Exporte essa base para uma planilha de Excel.
+
+resumo <- teses_relevantes |>
+  select(ano, UF, nome_programa, titulo, resumo, autor)
+
+# write_csv(resumo, "resumo.csv")
