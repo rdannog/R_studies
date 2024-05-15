@@ -29,6 +29,7 @@ library(rio)
 library(sf)
 library(geobr)
 library(gt)
+library(knitr)
 ```
 
 # Tendências na produção de teses e dissertações em Sociologia
@@ -40,42 +41,35 @@ A análise foi realizada utilizando dados coletados de duas fontes:
 -   **Banco de dados de defesas de teses e dissertações da CAPES:** Contém informações sobre as defesas realizadas entre 1987 e 2022, incluindo dados sobre o programa, a instituição, o autor, o título, as palavras-chave e a área de avaliação.
 -   **Banco de dados de programas de pós-graduação da CAPES:** Contém informações sobre os programas de pós-graduação, incluindo o código do programa, o estado e o conceito CAPES.
 
-## 1. Importando arquivos
+## 1. Importando arquivos e arrumando a base
 
-Para importar a base de dados contendo as dissertações e teses de programas na CAPES, optei por utilizar a função `map_df`. Nesse caso, a map_df é mais prática que o loop por economizar linhas e espaço de memória.
+Para começar a análise, foi preciso importar a base de dados contendo as dissertações e teses de programas na CAPES. Optei por utilizar a função `map_df`. Nesse caso, a `map_df` é mais prática que o loop por economizar linhas e espaço de memória.
 
 ```{r}
-banco_defesas <- map_df(c("csvs/capes_1987-1992.csv", "csvs/capes_1993-1998.csv","csvs/capes_1999-2004.csv", "csvs/capes_2005-2010.csv", "csvs/capes_2011-2016.csv","csvs/capes_2017-2022.csv"),read_delim, delim = ",")
+banco_defesas <- map_df(c("csvs/capes_1987-1992.csv", "csvs/capes_1993-1998.csv",
+                          "csvs/capes_1999-2004.csv", "csvs/capes_2005-2010.csv",
+                          "csvs/capes_2011-2016.csv","csvs/capes_2017-2022.csv"),
+                          read_delim, delim = ",")
 ```
 
 Usando `map_df` é possível combinar todas as planilhas contendo as teses e dissertações defendidas entre 1987 a 2022, em um único tibble. Como resultado, a planilha possui 13 variáveis: código do programa, ano, sigla, nome da instituição, nome do programa, grande área, área de conhecimento, área de avaliação, autor, titulo, nivel, palavas-chave e resumo. Cada observação diz respeito a uma defesa.
-
-Para carregar a planilha com informações sobre os programas de pós-graduação, usei a função `import()` do pacote `rio`. A planilha resultante possui 3 variáveis: código do programa, estado e conceito CAPES. Cada observação diz respeito a um programa de pós-graduação
 
 ```{r}
 banco_programas <- import("programas.csv")
 ```
 
-## 1. Importando
+Em seguida, usei a função `import()` do pacote `rio` para carregar a planilha com informações sobre os programas de pós-graduação. A planilha resultante possui 3 variáveis: código do programa, estado e conceito CAPES. Cada observação diz respeito a um programa de pós-graduação.
 
-Para importar a base de dados contendo as dissertações e teses de programas na CAPES, optei por utilizar o `map_df` pois nesse caso achei mais prático do que usar um laço de repetição, por economizar linhas e espaço de memória.
+Para concatenar as informações sobre os programas com as informações sobre as defesas, utilizei a função `left_join` para juntar as informações partindo de uma variável em comum: o código do programa.
 
-Usando `map_df` é possível combinar todas as planilhas contendo as teses e dissertações defendidas entre 1987 a 2022, em um único tibble. Essa planilha possui 13 variáveis: código do programa, ano, sigla, nome da instituição, nome do programa, grande área, área de conhecimento, área de avaliação, autor, título, nível, palavras-chave e resumo. Cada observação diz respeito a uma defesa.
-
-Para carregar a planilha com informações sobre os programas de pós-graduação, usei a função `import()` do pacote `rio`. Essa planilha possui 3 variáveis: código do programa, estado e conceito
-
-CAPES. Cada observação diz respeito a um programa de pós-graduação.
-
-``` r
+```{r}
 teses_e_programas <- banco_defesas |>
   left_join(banco_programas, by = c("codigo_programa" = "CD_PROGRAMA"))
 ```
 
-Para concatenar as informações sobre os programas com as informações sobre as defesas, utilizei a função `left_join` para juntar as informações partindo de uma variável em comum: o código do programa.
+Ao analisar a nova base, percebi alguns missings na variável `UF`. Tentei arrumar a lista me guiando a partir da coluna `siglas_ies`. Além disso, incluí a variável `regiao`, que vai ser útil mais à frente.
 
-Ao analisar a nova base, percebi alguns missings na variável UF. Tentei arrumar a lista me guiando a partir das colunas `siglas_ies` e `UF`. Além disso, incluí a variável `regiao`, que vai ser útil mais à frente.
-
-``` r
+```{r}
 banco_tidy <- teses_e_programas |>
   mutate(UF = case_when( 
     str_detect(sigla_ies, "RJ|RIO|UENF|UFF|UCAM") ~ "RJ",
@@ -117,19 +111,21 @@ banco_tidy <- teses_e_programas |>
   ))
 ```
 
-Após limpar a lista, filtrei apenas observações que continham programas com notas maiores que 4 sobre minha área de interesse (sociologia). Por algum motivo os missings continuavam a ser considerados quando eu utilizava a lógica `CONCEITO == 4|5|6|7`, então achei melhor filtrar usando a negação das observações indesejadas.
+Após limpar a lista, filtrei apenas observações que continham programas com notas maiores que 4 em minha área de interesse (sociologia).
 
-``` r
+```{r}
 teses_sociologia <- banco_tidy |>
   filter(CONCEITO != "NA|3|A") |>
   filter(str_detect(nome_programa, "SOCIOLOGIA"))
 ```
 
+Por algum motivo os *missings* continuavam a ser considerados quando eu utilizava a lógica `CONCEITO == 4|5|6|7`, então achei melhor filtrar usando a negação das observações indesejadas.
+
 ## 2. Seleção de palavras-chave
 
-Para o meu desenho de pesquisa, as 3 palavras-chave mais interessantes são ensino superior, desigualdade e educação. Filtrei a base para mostrar apenas defesas que se enquadravam em pelo menos uma das 3 palavras-chave.
+Para o meu desenho de pesquisa, as 3 palavras-chave mais interessantes são `ensino superior`, `desigualdade` e `educação`. Filtrei a base para mostrar apenas defesas que se enquadravam em pelo menos uma das 3 palavras-chave.
 
-``` r
+```{r}
 teses_relevantes <- teses_sociologia |>
  filter(str_detect(palavras_chave,"ensino superior|desigualdade|educação"))
 ```
@@ -138,7 +134,7 @@ teses_relevantes <- teses_sociologia |>
 
 Para criar uma visualização que reporte de forma sucinta e informativa a produção de teses e dissertações no meu tema por ano, primeiro era preciso criar uma tabela de contagem das ocorrências de defesas por ano e palavra-chave. Criei a variável `subtema`, que classificava as defesas por palavra-chave correspondente. Depois contei quantas ocorrências cada variável `ano` tinha em relação a cada observação da variável `subtema`.
 
-``` r
+```{r}
 teses_por_ano_subtema <- teses_relevantes |>
  mutate(subtema = case_when(
   str_detect(palavras_chave, "ensino superior") ~ "Ensino Superior",
@@ -152,10 +148,10 @@ teses_por_ano_subtema <- teses_relevantes |>
 
 Para visualizar, escolhi o gráfico de barras empilhadas para ver quantas observações foram feitas para cada ano do eixo x, qualificando a frequência por palavras-chave. Assim consigo ver quantas teses foram defendidas em cada ano, ao mesmo tempo em que consigo ver a frequência de cada subtema que considerei relevante para minha pesquisa. O gráfico em barras empilhadas é perfeito para visualizar a relação entre uma variável numérica e uma variável categórica.
 
-```{r}
+```{r, fig.height=6}
 ggplot(teses_por_ano_subtema, aes(x = ano, y = frequencia, fill = subtema)) +
     geom_bar(stat = "identity", position = "stack") +
-    labs(title = "Produção de Teses e Dissertações em Sociologia, por Palavra-Chave (1987-2022)",
+    labs(title = "  Produção de Defesas em Sociologia, por Palavra-Chave (1987-2022)",
          x = "
             Ano de defesa", y = "Número de defesas
         ") +
@@ -163,34 +159,41 @@ ggplot(teses_por_ano_subtema, aes(x = ano, y = frequencia, fill = subtema)) +
     theme_classic() +
     theme(panel.grid.minor = element_blank())+
     theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-    scale_fill_viridis_d(labels = c("Ensino Superior", "Desigualdade", "Educação", "Outros"),
+    scale_fill_viridis_d(labels = c("Ensino Superior", "Desigualdade", 
+                                    "Educação", "Outros"),
                          name = "Legenda:") 
 ```
-
-![Gráfico 1: Produção de Teses e Dissertações em Sociologia, por Palavra-Chave (1987-2022)](Produção%20de%20Teses%20e%20Dissertações%20em%20Sociologia,%20por%20Palavra-Chave%20(1987-2022).png)
 
 ## 4. Diferenças regionais
 
 Nesta seção, serão calculados o total de trabalhos defendidos ao longo de todo o período por estado e serão criadas duas visualizações: em uma, reporta a frequência de trabalhos por região; em outra, a frequência de trabalhos por unidade da federação.
 
-### Mapa da frequência de trabalhos por Unidade da Federação usando geobr
+### Mapeando da frequência de trabalhos por Unidade da Federação usando geobr
 
-``` r
-coordenadas_estados <- read_state() # função geobr
+Usando as funções `read_state()` e `read_region()` do pacote `geobr` é possível obter as coordenadas de todos os estados e regiões do Brasil.
 
-# Agrupando teses por estado e juntando com coordenadas do pacote geobr
+```{r}
+coordenadas_estados <- read_state(showProgress = FALSE)
+coordenadas_regioes <- read_region(showProgress = FALSE)
+```
+
+Em seguida, para garantir uma boa visualização das frequências, as teses foram agrupadas por estado e unidas com as coordenadas extraídas do pacote `geobr`.
+
+```{r}
 teses_por_estado <- teses_sociologia |>
   group_by(UF) |>
   summarise(total_trabalhos_uf = n()) |>
   full_join(coordenadas_estados, by = c("UF" = "abbrev_state")) |>
   st_as_sf()
+```
 
-# Mapa da frequência de defesas por estado
+# Mapa representando a frequência de defesas por estado
 
+```{r, fig.width=11, echo=FALSE}
   teses_por_estado |>
   ggplot(aes(fill = total_trabalhos_uf, label =  paste(UF, " (", total_trabalhos_uf, ")", sep = "")))+
   geom_sf()+
-  geom_sf_label(fill = "white", size = 1.9, nudge_x = 0.5)+
+  geom_sf_label(fill = "white", size = 2.3, nudge_x = 0.5)+
   scale_fill_viridis_c(name = "Número de Trabalhos")+
   ggtitle("Frequência de Trabalhos de Sociologia Defendidos por Unidade da Federação")+
   theme_void()+
@@ -198,36 +201,37 @@ teses_por_estado <- teses_sociologia |>
        caption = "FONTE: CAPES")
 ```
 
-![Gráfico 2.1: Frequência de Trabalhos de Sociologia Defendidos por Unidade da Federação](Frequência%20de%20Trabalhos%20de%20Sociologia%20Defendidos%20por%20Unidade%20da%20Federação.png)
+É possível observar que São Paulo (SP) é de longe o estado que mais produz na seleção que fiz.Seguido de Rio de Janeiro (RJ) e Ceará (CE)
 
-É possível observar que São Paulo é de longe o estado que mais produz na seleção que fiz.
 
 ### Mapa da frequência de trabalhos por região
 
-``` r
+Utilizando a mesma lógica do mapa anterior, construí o mapa abaixo contando o número de trabalhos defendidos entre as regiões do Brasil.
+
+```{r, fig.width=11}
 teses_por_regiao <- teses_sociologia |>
   group_by(regiao) |>
   summarise(total_trabalhos_regiao = n()) |>
-  full_join(coordenadas_estados, by = c("regiao" = "name_region")) |>
+  full_join(coordenadas_regioes, by = c("regiao" = "name_region")) |>
   st_as_sf()
 
-ggplot(teses_por_regiao) +
-  geom_sf(aes(fill = total_trabalhos_regiao)) +
-  scale_fill_viridis_c(name = "Número de Trabalhos") +
-  theme_void() +
-  labs(title = "Frequência de Trabalhos de Sociologia Defendidos por Região do País",
-       subtitle = "1987 - 2022",
+
+ggplot(teses_por_regiao, aes(fill = total_trabalhos_regiao, label =  paste(regiao, " (", total_trabalhos_regiao, ")", sep = "")))+
+  geom_sf()+
+  geom_sf_label(fill = "white", size = 3, nudge_x = 0.5)+
+  scale_fill_viridis_c(name = "Número de Trabalhos")+
+  ggtitle("Frequência de Trabalhos de Sociologia Defendidos por Região")+
+  theme_void()+
+  labs(subtitle = "1987 - 2022", 
        caption = "FONTE: CAPES")
        
 ```
-
-![Gráfico 2.2: Frequência de Trabalhos de Sociologia Defendidos por Região do País](Frequência%20de%20Trabalhos%20de%20Sociologia%20Defendidos%20por%20Região%20do%20País.png)
 
 ## 5. Produção por programa
 
 Nesta seção, será calculado o total de teses e dissertações defendidas por programa de pós-graduação. Em seguida, será reportado em uma tabela o número de trabalhos defendidos pelos 10 programas com maior produção.
 
-``` r
+```{r}
 trabalhos_por_programa <- teses_sociologia |>
   mutate(tese_ou_defesa = case_when(
     str_detect(nivel, "Mestrado|MESTRADO|MESTRADO PROFISSIONAL") ~ "dissertacao",
@@ -247,22 +251,35 @@ trabalhos_por_programa <- pivot_wider(trabalhos_por_programa, names_from = tese_
   select(-total_defesas)
 ```
 
-##### Tabela 1: Programas com o maior número de trabalhos em sociologia
+Para o cálculo, utilizei a função `case_when()` para filtrar os níveis (mestrado- doutorado) e contabilizar o número de trabalhos totais.
+
+
+Tabela 1: Programas com o maior número de trabalhos em sociologia
+
+```{r, echo=TRUE}
+trabalhos_por_programa |>
+  gt() |>
+  tab_header(title = "Estatísicas descritivas de teses e dissertações de programas de pós-graduação 1987-2022") |>
+  tab_source_note(source_note = "Fonte: CAPES.")
+  
+trabalhos_por_programa <- print(trabalhos_por_programa)
+  
+```
 
 | Instituição | Programa                  | Nota CAPES | Dissertações | Teses |
 |-------------|---------------------------|------------|--------------|-------|
 | USP         | SOCIOLOGIA                | 6          | 489          | 560   |
-| UFRJ        | SOCIOLOGIA E ANTROPOLOGIA | 7          | 530          | 292   |
+| UFRJ        | SOCIOLOGIA E ANTROPOLOGIA | 7          | 530          | 292   |
 | UFC         | SOCIOLOGIA                | 5          | 533          | 265   |
 | UNB         | SOCIOLOGIA                | 7          | 378          | 328   |
 | UFRGS       | SOCIOLOGIA                | 7          | 451          | 245   |
-| UFSC        | SOCIOLOGIA POLÍTICA       | 5          | 448          | 153   |
+| UFSC        | SOCIOLOGIA POLÍTICA       | 5          | 448          | 153   |
 | UNICAMP     | SOCIOLOGIA                | 6          | 434          | 151   |
 | UFPE        | SOCIOLOGIA                | 5          | 356          | 228   |
 | UFPB-JP     | SOCIOLOGIA                | 5          | 379          | 161   |
 | UFPR        | SOCIOLOGIA                | 5          | 363          | 169   |
 
-``` r
+```{r, fig.height=5}
 ggplot(trabalhos_por_programa, aes(x =reorder(sigla_ies, -(tese+dissertacao)), y=  tese + dissertacao, fill = nome_programa)) +
   geom_bar(stat = "identity", position = "stack") +
   labs(title = "Produção em Sociologia, por programa de pós-graduação (1987-2022)",
@@ -272,15 +289,14 @@ ggplot(trabalhos_por_programa, aes(x =reorder(sigla_ies, -(tese+dissertacao)), y
   scale_fill_viridis_d(name = "Nome do programa")
 ```
 
-![Produção em Sociologia, por programa de pós-graduação (1987-2022)](Produção%20em%20Sociologia,%20por%20programa%20de%20pós-graduação%20(1987-2022).png)
-
 ## 6. Exportação
 
 Nesta última etapa, será criada uma base menor contendo apenas as seguintes variáveis: ano, estado, programa, título, resumo e autor(a). Essa base será exportada para uma planilha de Excel.
 
-``` r
+```{r}
 resumo <- teses_relevantes |>
   select(ano, UF, nome_programa, titulo, resumo, autor)
+resumo <- print(resumo)
 
 # write_csv(resumo, "resumo.csv")
 ```
