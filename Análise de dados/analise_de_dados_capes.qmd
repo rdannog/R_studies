@@ -10,7 +10,7 @@ format:
     toc: false
     number-sections: false
     colorlinks: true
-    fig-pos: 'ht'
+    fig-pos: 'H'
     geometry:
       - top=25mm
       - left=20mm
@@ -46,7 +46,7 @@ A análise foi realizada utilizando dados coletados de duas fontes:
 
 Para importar a base de dados contendo as dissertações e teses de programas na CAPES, optei por utilizar a função `map_df`. Nesse caso, a map_df é mais prática que o loop por economizar linhas e espaço de memória.
 
-``` {.r style="width: 90vw;"}
+```{r}
 banco_defesas <- map_df(c("csvs/capes_1987-1992.csv", "csvs/capes_1993-1998.csv","csvs/capes_1999-2004.csv", "csvs/capes_2005-2010.csv", "csvs/capes_2011-2016.csv","csvs/capes_2017-2022.csv"),read_delim, delim = ",")
 ```
 
@@ -54,7 +54,7 @@ Usando `map_df` é possível combinar todas as planilhas contendo as teses e dis
 
 Para carregar a planilha com informações sobre os programas de pós-graduação, usei a função `import()` do pacote `rio`. A planilha resultante possui 3 variáveis: código do programa, estado e conceito CAPES. Cada observação diz respeito a um programa de pós-graduação
 
-``` r
+```{r}
 banco_programas <- import("programas.csv")
 ```
 
@@ -167,13 +167,13 @@ ggplot(teses_por_ano_subtema, aes(x = ano, y = frequencia, fill = subtema)) +
                          name = "Legenda:") 
 ```
 
-![Gráfico 1: Produção de Teses e Dissertações em Sociologia, por Palavra-Chave (1987-2022)](Produção%20de%20Teses%20e%20Dissertações%20em%20Sociologia,%20por%20Palavra-Chave%20(1987-2022).png)
+![Produção de Teses e Dissertações em Sociologia, por Palavra-Chave (1987-2022)](Produção%20de%20Teses%20e%20Dissertações%20em%20Sociologia,%20por%20Palavra-Chave%20(1987-2022).png)
 
 ## 4. Diferenças regionais
 
 Nesta seção, serão calculados o total de trabalhos defendidos ao longo de todo o período por estado e serão criadas duas visualizações: em uma, reporta a frequência de trabalhos por região; em outra, a frequência de trabalhos por unidade da federação.
 
-### Mapa da frequência de trabalhos por Unidade da Federação usando geobr
+### Mapa da frequência de trabalhos por Unidade da Federação usando `geobr`
 
 ``` r
 coordenadas_estados <- read_state() # função geobr
@@ -198,11 +198,11 @@ teses_por_estado <- teses_sociologia |>
        caption = "FONTE: CAPES")
 ```
 
-![Gráfico 2.1: Frequência de Trabalhos de Sociologia Defendidos por Unidade da Federação](Frequência%20de%20Trabalhos%20de%20Sociologia%20Defendidos%20por%20Unidade%20da%20Federação.png)
+![Frequência de Trabalhos de Sociologia Defendidos por Unidade da Federação](Frequência%20de%20Trabalhos%20de%20Sociologia%20Defendidos%20por%20Unidade%20da%20Federação.png)
 
 É possível observar que São Paulo é de longe o estado que mais produz na seleção que fiz.
 
-### Mapa da frequência de trabalhos por região
+### Mapa da frequência de trabalhos por região usando `geobr`
 
 ``` r
 teses_por_regiao <- teses_sociologia |>
@@ -221,7 +221,7 @@ ggplot(teses_por_regiao) +
        
 ```
 
-![Gráfico 2.2: Frequência de Trabalhos de Sociologia Defendidos por Região do País](Frequência%20de%20Trabalhos%20de%20Sociologia%20Defendidos%20por%20Região%20do%20País.png)
+![Frequência de Trabalhos de Sociologia Defendidos por Região do País](Frequência%20de%20Trabalhos%20de%20Sociologia%20Defendidos%20por%20Região%20do%20País.png)
 
 ## 5. Produção por programa
 
@@ -246,8 +246,6 @@ trabalhos_por_programa <- pivot_wider(trabalhos_por_programa, names_from = tese_
   slice(1:10)|>
   select(-total_defesas)
 ```
-
-##### Tabela 1: Programas com o maior número de trabalhos em sociologia 
 
 | Instituição | Programa                  | Nota CAPES | Dissertações | Teses |
 |-------------|---------------------------|------------|--------------|-------|
@@ -282,5 +280,5 @@ Nesta última etapa, será criada uma base menor contendo apenas as seguintes va
 resumo <- teses_relevantes |>
   select(ano, UF, nome_programa, titulo, resumo, autor)
 
-# write_csv(resumo, "resumo.csv")
+write_csv(resumo, "resumo.csv")
 ```
