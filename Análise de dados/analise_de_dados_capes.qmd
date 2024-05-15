@@ -29,8 +29,6 @@ library(rio)
 library(sf)
 library(geobr)
 library(gt)
-library(plotly)
-library(knitr)
 ```
 
 # Tendências na produção de teses e dissertações em Sociologia
@@ -64,7 +62,9 @@ Para importar a base de dados contendo as dissertações e teses de programas na
 
 Usando `map_df` é possível combinar todas as planilhas contendo as teses e dissertações defendidas entre 1987 a 2022, em um único tibble. Essa planilha possui 13 variáveis: código do programa, ano, sigla, nome da instituição, nome do programa, grande área, área de conhecimento, área de avaliação, autor, título, nível, palavras-chave e resumo. Cada observação diz respeito a uma defesa.
 
-Para carregar a planilha com informações sobre os programas de pós-graduação, usei a função `import()` do pacote `rio`. Essa planilha possui 3 variáveis: código do programa, estado e conceito CAPES. Cada observação diz respeito a um programa de pós-graduação.
+Para carregar a planilha com informações sobre os programas de pós-graduação, usei a função `import()` do pacote `rio`. Essa planilha possui 3 variáveis: código do programa, estado e conceito
+
+CAPES. Cada observação diz respeito a um programa de pós-graduação.
 
 ``` r
 teses_e_programas <- banco_defesas |>

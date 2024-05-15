@@ -18,6 +18,8 @@ library(sf)
 library(geobr)
 library(gt)
 library(plotly)
+library(ggrepel)
+
 
 ### 1. Importando arquivos ###
 
