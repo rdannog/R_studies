@@ -292,19 +292,7 @@ Nesta última etapa, foi criada uma base menor contendo apenas as seguintes vari
 resumo <- trabalhos_relevantes |>
   select(ano, UF, nome_programa, titulo, resumo, autor)
 ```
-``` {r, fig.width=9}
-resumo |>
-  gt() |>
-  tab_header(title = "Trabalhos relevantes para minha pesquisa") |>
-  tab_source_note(source_note = "Fonte: CAPES.") |>
-  cols_label(ano = md("**Ano**"), UF = md("**Estado**"), nome_programa = md("**Programa**"), titulo = md("**Título**"), resumo = md("**Breve resumo**"), autor = md("**Autor**"))|>
-  text_transform(
-    locations = cells_body(columns = resumo),
-    fn = function(x) {
-      substr(x, 1, 80)  # Encurta o texto 
-    }
-  )
-  
+``` {r}
 # write_csv(resumo, "resumo.csv")
 
 ```
