@@ -65,8 +65,6 @@ Para concatenar as informações sobre os programas com as informações sobre a
 ```{r}
 defesas_e_programas <- defesas |>
   left_join(programas, by = c("codigo_programa" = "CD_PROGRAMA"))
-
-  view(defesas_e_programas)
 ```
 
 Ao analisar a nova base, percebi alguns missings na variável `UF`. Tentei arrumar a lista me guiando a partir da coluna `siglas_ies`. Além disso, incluí a variável `regiao`, que vai ser útil mais à frente.
@@ -258,13 +256,10 @@ Transformei a coluna `tese_ou_defesa` em duas variáveis: `dissertacao` e `tese`
 A tabela final possui 4 informações importantes: nome do programa, nota CAPES, total de dissertações e total de teses defendidas no programa.
 
 
-Tabela 1: Programas com o maior número de trabalhos em sociologia
-
 ```{r, echo=TRUE}
 trabalhos_por_programa |>
   gt() |>
-  tab_header(title = "Estatísicas descritivas de teses e dissertações 
-             de programas de pós-graduação 1987-2022") |>
+  tab_header(title = "Programas com o maior número de trabalhos em sociologia 1987-2022") |>
   tab_source_note(source_note = "Fonte: CAPES.") |>
   cols_label(sigla_ies = md("**Sigla**"), nome_programa = md("**Nome do Programa**"), CONCEITO = md("**Nota CAPES**"), dissertacao = md("**Dissertações**"), tese = md("**Teses**"))
   
