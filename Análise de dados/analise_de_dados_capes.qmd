@@ -23,7 +23,6 @@ lang: pt
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 
 # Pacotes
-library(modelsummary)
 library(tidyverse)
 library(rio)
 library(sf)
@@ -38,8 +37,9 @@ library(knitr)
 
 A análise foi realizada utilizando dados coletados de duas fontes:
 
->   **Banco de dados de defesas de teses e dissertações da CAPES:** Contém informações sobre as defesas realizadas entre 1987 e 2022, incluindo dados sobre o programa, a instituição, o autor, o título, as palavras-chave e a área de avaliação.
->   **Banco de dados de programas de pós-graduação da CAPES:** Contém informações sobre os programas de pós-graduação, incluindo o código do programa, o estado e o conceito CAPES.
+> **Banco de dados de defesas de teses e dissertações da CAPES:** Contém informações sobre as defesas realizadas entre 1987 e 2022, incluindo dados sobre o programa, a instituição, o autor, o título, as palavras-chave e a área de avaliação.
+
+> **Banco de dados de programas de pós-graduação da CAPES:** Contém informações sobre os programas de pós-graduação, incluindo o código do programa, o estado e o conceito CAPES.
 
 ## 1. Importando arquivos e arrumando a base
 
@@ -65,6 +65,8 @@ Para concatenar as informações sobre os programas com as informações sobre a
 ```{r}
 defesas_e_programas <- defesas |>
   left_join(programas, by = c("codigo_programa" = "CD_PROGRAMA"))
+
+  view(defesas_e_programas)
 ```
 
 Ao analisar a nova base, percebi alguns missings na variável `UF`. Tentei arrumar a lista me guiando a partir da coluna `siglas_ies`. Além disso, incluí a variável `regiao`, que vai ser útil mais à frente.
@@ -265,9 +267,6 @@ trabalhos_por_programa |>
              de programas de pós-graduação 1987-2022") |>
   tab_source_note(source_note = "Fonte: CAPES.") |>
   cols_label(sigla_ies = md("**Sigla**"), nome_programa = md("**Nome do Programa**"), CONCEITO = md("**Nota CAPES**"), dissertacao = md("**Dissertações**"), tese = md("**Teses**"))
-
-  
-trabalhos_por_programa <- print(trabalhos_por_programa)
   
 ```
 
@@ -289,24 +288,22 @@ ggplot(trabalhos_por_programa, aes(x =reorder(sigla_ies, -(tese+dissertacao)),
 
 Nesta última etapa, foi criada uma base menor contendo apenas as seguintes variáveis: ano, estado, programa, título, resumo e autor(a). Essa base está exportada em uma planilha `.csv`, para consultas futuras.
 
-```{r, echo=TRUE, fig.height=7, fig.width=9}
+```{r, echo=TRUE}
 resumo <- trabalhos_relevantes |>
   select(ano, UF, nome_programa, titulo, resumo, autor)
-
-resumo <- resumo |>
+```
+``` {r, fig.width=9}
+resumo |>
   gt() |>
   tab_header(title = "Trabalhos relevantes para minha pesquisa") |>
   tab_source_note(source_note = "Fonte: CAPES.") |>
-  cols_label(ano = md("**Ano**"), UF = md("**Estado**"), nome_programa = md("**Programa**"), titulo = md("**Título**"), resumo = md("**Resumo**"), autor = md("**Autor**"))|>
+  cols_label(ano = md("**Ano**"), UF = md("**Estado**"), nome_programa = md("**Programa**"), titulo = md("**Título**"), resumo = md("**Breve resumo**"), autor = md("**Autor**"))|>
   text_transform(
     locations = cells_body(columns = resumo),
     fn = function(x) {
       substr(x, 1, 80)  # Encurta o texto 
     }
   )
-
-  
-resumo <- print(resumo)
   
 # write_csv(resumo, "resumo.csv")
 
