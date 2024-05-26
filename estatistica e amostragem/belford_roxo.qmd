@@ -1,10 +1,11 @@
 ---
-title: "Lista II: Análise de Dados da CAPES"
-date: "15/05/2023"
+title: "Lista III: Estatística e amostragem"
+date: "30/05/2023"
 author:
    name: Dan Nogueira da Silva
    email: dan.nogueira@ufrj.br
-abstract: Nesta lista, o objetivo será analisar a produção de teses e dissertações de programas de pós-graduação notas 4, 5, 6 e 7 na Capes, das áreas de Sociologia, entre os anos de 1987 e 2022. A análise explora a evolução da produção ao longo do tempo, a distribuição por subtemas e a concentração regional das defesas, seguindo um recorte de palavras-chave específico. Os dados foram processados e analisados utilizando o software R e pacotes para análise de dados e visualização.
+abstract: Nesta lista, o objetivo será analisar amostras da população de Belford Roxo (RJ), usando uma base de microdados de toda a população do município extraída do Censo
+Demográfico de 2010.  
 format:
   pdf:
     toc: false
@@ -25,31 +26,50 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 # Pacotes
 library(tidyverse)
 library(rio)
-library(sf)
-library(geobr)
-library(gt)
 ```
 
-# Tendências na produção de teses e dissertações em Sociologia
 
-## Metodologia
-
-A análise foi realizada utilizando dados coletados de duas fontes:
-
-> **Banco de dados de defesas de teses e dissertações da CAPES:** Contém informações sobre as defesas realizadas entre 1987 e 2022, incluindo dados sobre o programa, a instituição, o autor, o título, as palavras-chave e a área de avaliação.
-
-> **Banco de dados de programas de pós-graduação da CAPES:** Contém informações sobre os programas de pós-graduação, incluindo o código do programa, o estado e o conceito CAPES.
-
-## 1. Importando arquivos e arrumando a base
-
-Para começar a análise, foi preciso importar a base de dados contendo as dissertações e teses de programas na CAPES. Optei por utilizar a função `map_df`. Nesse caso, a `map_df` é mais prática que o laço de repetição, por economizar linhas e espaço de memória.
+Para iniciar a análise, foi preciso importar a base de dados contendo os dados do censo de 2010.
 
 ```{r}
-defesas <- map_df(c("csvs/capes_1987-1992.csv", "csvs/capes_1993-1998.csv",
-                          "csvs/capes_1999-2004.csv", "csvs/capes_2005-2010.csv",
-                          "csvs/capes_2011-2016.csv","csvs/capes_2017-2022.csv"),
-                          read_delim, delim = ",")
+base <- import("data/belford_roxo.Rda")
 ```
+
+Como resultado, a planilha possui 6 variáveis: id, zona_domicilio, sexo, idade, renda_mensal e cor_raca. Cada uma das 469313 observações dizem respeito a uma pessoa moradora de belford roxo.
+
+
+
+```{r, fig.width=9, fig.height=7}
+
+base_nova <- base |>
+  count(idade, sexo) |>
+ rename(frequencia = n) |>
+  slice(1:60)
+
+ggplot(base_nova, aes(x =idade, y= frequencia, fill= sexo)) +
+  geom_bar(stat = "identity", position = "stack") +
+  labs(title = "Juventude de Belford-Roxo",
+       x = "
+       Idade", y = "Número de pessoas") +
+  scale_x_continuous(breaks = unique(base_nova$idade)) +
+  theme_classic() +
+  theme(panel.grid.minor = element_blank())+
+  scale_fill_viridis_d(name = "Sexo")
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 Usando `map_df` é possível combinar todas as planilhas contendo as teses e dissertações defendidas entre 1987 a 2022, em um único tibble. Como resultado, a planilha possui 13 variáveis: código do programa, ano, sigla, instituição, nome do programa, grande área, área de conhecimento, área de avaliação, autor, titulo, nivel, palavras-chave e resumo. Cada observação diz respeito a uma defesa.
 
