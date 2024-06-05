@@ -42,16 +42,25 @@ Como resultado, a planilha possui 6 variáveis: id, zona_domicilio, sexo, idade,
 ```{r, fig.width=9, fig.height=7}
 
 base_nova <- base |>
-  count(idade, sexo) |>
+  mutate(faixa = case_when(
+  idade <= 6 ~ "0 a 06 anos",
+  idade <= 12 ~ "07 a 12 anos",
+  idade <= 17 ~ "13 a 17 anos",
+  idade <= 24 ~ "18 a 24 anos",
+  idade <= 29 ~ "25 a 29 anos",
+  TRUE ~ "Outros"  # catchError
+ ))|>
+  count(faixa, sexo) |>
  rename(frequencia = n) |>
-  slice(1:60)
+  filter(faixa != "Outros") |>
+  mutate(cumsum= cumsum(frequencia)-frequencia/2)
 
-ggplot(base_nova, aes(x =idade, y= frequencia, fill= sexo)) +
+ggplot(base_nova, aes(x =faixa, y= frequencia, fill= sexo, label =  frequencia)) +
   geom_bar(stat = "identity", position = "stack") +
+  geom_label( position = position_stack(vjust = 0.5), fill= "#d2d2d2") +
   labs(title = "Juventude de Belford-Roxo",
        x = "
-       Idade", y = "Número de pessoas") +
-  scale_x_continuous(breaks = unique(base_nova$idade)) +
+       Faixa de idade", y = "Número de pessoas") +
   theme_classic() +
   theme(panel.grid.minor = element_blank())+
   scale_fill_viridis_d(name = "Sexo")
