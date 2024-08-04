@@ -1,6 +1,9 @@
 
 library(tidyverse)
+library(janitor)
+library(dplyr)
 library(rio)
+library(ggplot2) 
 
 
 ## Baixando tabela com ginis dos países 
@@ -18,7 +21,7 @@ gini_mod <- gini
 # Espanha também não tem dados em 2017
 
 
-gini_mod <- gini_mod %>% # mesmo nome 
+gini_mod <- gini_mod |> # mesmo nome 
   mutate(pais = # vou juntar essa variável com a "pais" do outro objeto
            case_when( # acrescentando mais uma variável (país) com os números correspondentes
     country == "Argentina" ~ 32,
@@ -43,27 +46,11 @@ gini_mod <- gini_mod %>% # mesmo nome
       year == 2016 ~ 2016,
       year == 2015 ~ 2015,
       TRUE ~ NA_real_ # Use NA_real_ para garantir que a coluna seja numérica
-    )) %>% 
-  select(country, gini_disp, pais, ano) %>% # Manter só paises, anos, gini
+    )) |> 
+  select(country, ano, gini_disp, pais) |> # Manter só paises, anos, gini
   na.omit() # todos os valores que tiverem NA, retirar da tabela
 
 
-# 2
-gini_mod %>% 
-  tabyl(country, ano)
-
-
-# 3
-gini_mod %>% 
-  tabyl(ano, year) # conferindo se os anos batem nas duas variáveis
-# Reparar que os anos de 2015 a 2020 tem só 16 e não 18 por causa da Nicaragua e Guatemala
-
-# Como tabela de gini_mod se mostra 
-head(gini_mod, 20)
-
-# Nomes das colunas de Gini original e gini modificado
-colnames(gini)
-colnames(gini_mod)
 
 #### Importando dados ----------------------------------------------------------
 
@@ -71,200 +58,46 @@ colnames(gini_mod)
 ## Os nomes dos arquivos estão padronizados, extrair do zip e trocar nome de endereço do dado
 
 # Se quiserem só baixar os anos usados, usar: 2015 - 2016 - 2017 - 2018
-# Não usei os demais, apesar de ter como baixá-los também
 
-
-## Arquivos baixados em sav
-
-# Não precisa baixar esses: 
-latino97 <- import("Latinobarometro_1997.sav")
-latino01 <- import("Latinobarometro_2001.sav")
-latino07 <- import("Latinobarometro_2007.sav")
-latino09 <- import("Latinobarometro_2009.sav")
-latino11 <- import("Latinobarometro_2011.sav")
-
-# Baixar esse:
-latino17 <- import("Latinobarometro_2017.sav")
-
-## Arquivos baixados em dta
-
-# Não precisa baixar esses: 
-latino02 <- import("Latinobarometro_2002.dta")
-latino10 <- import("Latinobarometro_2010.dta")
-latino13 <- import("Latinobarometro_2013.dta")
-latino20 <- import("Latinobarometro_2020.dta")
-
-# Baixar esses: 
 latino15 <- import("Latinobarometro_2015.dta")
 latino16 <- import("Latinobarometro_2016.dta")
+latino17 <- import("Latinobarometro_2017.sav")
 latino18 <- import("Latinobarometro_2018.dta")
 
-# Obs: prestar atenção no TIPO do arquivo
-# Obs. 2: com o import dá pra baixar todos os arquivos sem problemas
-
-#### Arrumando dados latinobarômetro -------------------------------------------
-
-### Variáveis para se usar:
-## - idenpa = pais
-## - numinves = ano
-## - código (especifico de cada ano) para a pergunta usada
-
-### Como objetos estão organizados:
-# Trocando nome para não ter que baixar de novo se quisermos modificar
-## latibo_ano = baixado 
-## lat_ano = modificado
-
-# Os que não vou usar (1997 - 2013) ----
-# 1997
-
-colnames(latino97)
-
-latino97 %>% 
-  select(numinves, idenpa, numentre, reg, codigo) %>% 
-  count(numinves)
-
-lat97 <- latino97 %>% # Criando novo objeto
-  select(ano = numinves, 
-         pais = idenpa, 
-         justo_renda = nsp20)
-
-head(lat97, 20)
-lat97 %>% 
-  tabyl(justo_renda, pais)
-
-# 2001
-
-colnames(latino01)
-
-latino01 %>% 
-  select(numinves, idenpa, numentre, reg, codigo) %>% 
-  count(numinves) 
-
-lat01 <- latino01 %>% # Criando novo objeto
-  select(ano = numinves, 
-         pais = idenpa, 
-         justo_renda = p11st)
-
-# 2002
-
-colnames(latino02)
-
-latino02 %>% 
-  select(numinves, idenpa, numentre, reg, codigo) %>% 
-  count(idenpa)
-
-lat02 <- latino02 %>% # Criando novo objeto
-  select(ano = numinves, 
-         pais = idenpa, 
-         justo_renda = p16st)
-
-# 2007
-
-colnames(latino07)
-
-lat07 <- latino07 %>% # Criando novo objeto
-  select(ano = numinves, 
-         pais = idenpa, 
-         justo_renda = p17st)
-
-# 2009
-
-colnames(latino09)
-
-lat09 <- latino09 %>% # Criando novo objeto
-  select(ano = numinves, 
-         pais = idenpa, 
-         justo_renda = p14st)
-
-# 2010
-
-colnames(latino10)
-
-lat10 <- latino10 %>% # Criando novo objeto
-  select(ano = numinves, 
-         pais = idenpa, 
-         justo_renda = P12ST)
-
-# 2011
-
-colnames(latino11)
-
-lat11 <- latino11 %>% # Criando novo objeto
-  select(ano = NUMINVES, 
-         pais = IDENPA, 
-         justo_renda = P12ST)
-
-# 2013
-
-colnames(latino13)
-
-lat13 <- latino13 %>% # Criando novo objeto
-  select(ano = numinves, 
-         pais = idenpa, 
-         justo_renda = P27ST)
 
 # Os que vou usar (2015 - 2018) ----
 
 # 2015
 
-lat15 <- latino15 %>% # Criando novo objeto
+lat15 <- latino15 |> # Criando novo objeto
   select(numinves, 
          pais = idenpa, 
-         justo_renda = P18ST) %>% 
+         justo_renda = P18ST) |> 
   mutate(ano = case_when( 
-    numinves == 18 ~ 2015)) %>% 
+    numinves == 18 ~ 2015)) |> 
   select(-numinves)
 
 # 2016
 
-colnames(latino16)
-
-lat16 <- latino16 %>% # Criando novo objeto
+lat16 <- latino16 |> # Criando novo objeto
   select(ano = numinves, 
          pais = idenpa, 
          justo_renda = P21ST)
 
 # 2017
 
-colnames(latino17)
-
-lat17 <- latino17 %>% # Criando novo objeto
+lat17 <- latino17 |> # Criando novo objeto
   select(ano = NUMINVES, 
          pais = IDENPA, 
          justo_renda = P20ST)
 
 # 2018
 
-colnames(latino18)
-
-lat18 <- latino18 %>% # Criando novo objeto
+lat18 <- latino18 |> # Criando novo objeto
   select(ano = NUMINVES, 
          pais = IDENPA, 
          justo_renda = P23ST)
 
-# 2020 - ERRO: NÃO ACHEI A VARIÁVEL
-
-colnames(latino20)
-latino20 %>% 
-  select(Q19ST.A)
-
-lat20 <- latino20 %>% # Não consegui criar novo objeto porque variável não está certa
-  select(ano = numinves, 
-         pais = idenpa, 
-         justo_renda = P19ST.A)
-
-
-### Conferindo objetos criados ------------------------------------------------- 
-
-# Não usados 
-glimpse(lat97)
-glimpse(lat01)
-glimpse(lat02)
-glimpse(lat07)
-glimpse(lat09)
-glimpse(lat10)
-glimpse(lat11)
-glimpse(lat13)
 
 # Usados 
 glimpse(lat15)
@@ -272,80 +105,6 @@ glimpse(lat16)
 glimpse(lat17)
 glimpse(lat18)
 
-# Todas as variáveis são double! Não é preciso mudar o tipo da variável! 
-
-## Entendendo se tem todos os anos
-
-# 1997
-
-lat97 %>% 
-  tabyl(pais)
-# país 600 tem 575 observações 
-# país 724 tem 2476 observações
-# país 68 tem 796 observações
-lat97 %>% 
-  tabyl(pais, justo_renda)
-
-# 2001
-
-lat01 %>% 
-  tabyl(pais)
-# atenção ao país 600 - só tem 604 observações
-# País 724 tem só 2496
-lat01 %>% 
-  tabyl(pais, justo_renda)
-
-# 2002
-
-lat02 %>% 
-  tabyl(pais)
-# país 600 tem 600 observações 
-# país 724 tem 2484 observações 
-lat02 %>% 
-  tabyl(pais, justo_renda)
-# Não tem respostas do ano 724 (todas as respostas estão no -4)
-# NÃO DÁ PRA USAR
-
-# 2007
-
-lat07 %>% 
-  tabyl(pais)
-# País 600 aqui tem 1200 observações
-# país 724 tem 2482 observações 
-lat07 %>% 
-  tabyl(pais, justo_renda)
-
-# 2009
-
-lat09 %>% 
-  tabyl(pais)
-# País 724 tem 2486 observações
-lat09 %>% 
-  tabyl(pais, justo_renda)
-
-# 2010
-
-lat10 %>% 
-  tabyl(pais)
-# País 724 tem 2483 observações
-lat10 %>% 
-  tabyl(pais, justo_renda)
-
-# 2011
-
-lat11 %>% 
-  tabyl(pais)
-# País com anos mais regulares 
-lat11 %>% 
-  tabyl(pais, justo_renda)
-
-# 2013
-
-lat13 %>% 
-  tabyl(pais)
-# Pais 724 tem 2459 observações 
-lat13 %>% 
-  tabyl(pais, justo_renda)
 
 # 2015
 
