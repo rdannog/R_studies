@@ -1,0 +1,50 @@
+---
+title: "Quão justa é a distribuição de renda na america latina?"
+date: "04-08-2024"
+author:
+   name: Dan Nogueira da Silva
+   email: dan.nogueira@ufrj.br
+abstract: Nesta lista, o objetivo será analisar percepções sobre desigualdade de distribuição de renda utilizando o índice de Gini
+format:
+  pdf:
+    toc: false
+    number-sections: false
+    colorlinks: true
+    fig-pos: 'H'
+    geometry:
+      - top=25mm
+      - left=20mm
+      - right=20mm
+      - bottom=25mm
+lang: pt
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+
+# Pacotes
+library(tidyverse)
+library(rio)
+```
+
+## Pergunta de pesquisa
+
+Quão justa é a percepção sobre a distribuição de renda entre os países da América Latina?
+
+## Dados utilizados
+
+-   **Latinobarómetro** ➜ Pesquisa de opinião pública latino-americana.
+
+Ferramenta fundamental para entender as dinâmicas sociais, políticas e econômicas da América Latina, com o objetivo mapear as opiniões, valores e comportamentos da população.
+
+A pesquisa é realizada anualmente em cerca de 20 países da América Latina, envolvendo um grande número de entrevistas face a face. Todos os entrevistados respondem às mesmas perguntas, o que permite a comparação dos resultados entre os diferentes países.
+
+-   **Índice de Gini** ➜ indicador utilizado para analisar a desigualdade social em diversos países e regiões.
+
+Ferramenta estatística utilizada para medir o grau de desigualdade na distribuição de renda ou de outros recursos em uma determinada população.
+
+O Índice de Gini mede a área entre a linha de perfeita igualdade e a curva de Lorenz. Quanto maior essa área, maior a desigualdade. O índice varia de 0 a 1:
+
+> 0: Indica perfeita igualdade (todos têm a mesma renda).
+>
+> 1: Indica máxima desigualdade (uma única pessoa possui toda a renda).

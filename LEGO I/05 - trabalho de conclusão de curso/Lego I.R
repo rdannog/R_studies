@@ -1,3 +1,4 @@
+
 #### Trabalho LEGO I 
 ## Percepções sobre desigualdade com índice de Gini
 
@@ -12,6 +13,8 @@ library(ggplot2)
 # Pergunta de pesquisa ---------------------------------------------------------
 
 # How fair is income distribution
+
+# 0 corresponde à completa igualdade de renda (onde todos têm a mesma renda) e 1 corresponde à completa desigualdade (onde uma pessoa tem toda a renda, e as demais nada têm).
 
 # Anos que aparece: 
 
