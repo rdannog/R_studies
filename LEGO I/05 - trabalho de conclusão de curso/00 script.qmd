@@ -1,10 +1,10 @@
 ---
-title: "Quão justa é a distribuição de renda na america latina?"
-date: "04-08-2024"
+title: "Quão justa é a percepção sobre a distribuição de renda entre os países da América Latina?"
+date: "08-04-2024"
 author:
    name: Dan Nogueira da Silva
    email: dan.nogueira@ufrj.br
-abstract: Nesta lista, o objetivo será analisar percepções sobre desigualdade de distribuição de renda utilizando o índice de Gini
+abstract: O presente trabalho tem como objetivo analisar a relação entre a percepção de desigualdade entre os cidadãos latino-americanos e a desigualdade real medida pelo índice de Gini. Utilizando dados do Latinobarómetro e o índice de Gini de cada país, buscamos entender como a percepção subjetiva de desigualdade se alinha ou diverge da desigualdade econômica objetiva.
 format:
   pdf:
     toc: false
@@ -27,11 +27,8 @@ library(tidyverse)
 library(rio)
 ```
 
-## Pergunta de pesquisa
+# Dados utilizados
 
-Quão justa é a percepção sobre a distribuição de renda entre os países da América Latina?
-
-## Dados utilizados
 
 -   **Latinobarómetro** ➜ Pesquisa de opinião pública latino-americana.
 
@@ -48,3 +45,14 @@ O Índice de Gini mede a área entre a linha de perfeita igualdade e a curva de 
 > 0: Indica perfeita igualdade (todos têm a mesma renda).
 >
 > 1: Indica máxima desigualdade (uma única pessoa possui toda a renda).
+
+
+# Metodologia
+
+As variáveis de percepção de desigualdade foram extraídas para os anos 2015-2018 em 18 países.
+
+Os valores do índice de Gini foram utilizados para os mesmos anos e países. 
+
+Excluímos Guatemala e Nicarágua da análise pois não encontramos o índice de Gini correspondente
+
+Após a limpeza e preparação dos dados, realizamos análises descritivas e de correlação, seguidas por modelagem estatística para investigar a relação entre as variáveis.
