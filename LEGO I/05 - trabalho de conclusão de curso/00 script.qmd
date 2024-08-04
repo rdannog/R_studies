@@ -29,7 +29,6 @@ library(rio)
 
 # Dados utilizados
 
-
 -   **Latinobarómetro** ➜ Pesquisa de opinião pública latino-americana.
 
 Ferramenta fundamental para entender as dinâmicas sociais, políticas e econômicas da América Latina, com o objetivo mapear as opiniões, valores e comportamentos da população.
@@ -42,17 +41,16 @@ Ferramenta estatística utilizada para medir o grau de desigualdade na distribui
 
 O Índice de Gini mede a área entre a linha de perfeita igualdade e a curva de Lorenz. Quanto maior essa área, maior a desigualdade. O índice varia de 0 a 1:
 
-> 0: Indica perfeita igualdade (todos têm a mesma renda).
+> **0:** Indica perfeita igualdade (todos têm a mesma renda).
 >
-> 1: Indica máxima desigualdade (uma única pessoa possui toda a renda).
-
+> **1:** Indica máxima desigualdade (uma única pessoa possui toda a renda).
 
 # Metodologia
 
-As variáveis de percepção de desigualdade foram extraídas para os anos 2015-2018 em 18 países.
+As variáveis de percepção de desigualdade foram extraídas para os anos 2015-2018 em 16 países da América Latina.
 
-Os valores do índice de Gini foram utilizados para os mesmos anos e países. 
+Os valores do índice de Gini foram utilizados para os mesmos anos e países.
 
-Excluímos Guatemala e Nicarágua da análise pois não encontramos o índice de Gini correspondente
+Excluímos Espanha, Guatemala e Nicarágua da análise pois não encontramos o índice de Gini correspondente para todos os anos em que a pergunta de nosso interesse foi feita.
 
 Após a limpeza e preparação dos dados, realizamos análises descritivas e de correlação, seguidas por modelagem estatística para investigar a relação entre as variáveis.
